@@ -1,0 +1,30 @@
+.addForm {
+}
+.at-input {
+  margin-left: 0;
+  padding-left: 32px;
+  padding-right: 32px;
+}
+
+.customItem {
+  padding: 24px 32px;
+  .label {
+    display: block;
+    margin-right: 32rpx;
+    width: 172rpx;
+    font-size: 32rpx;
+    line-height: 1.5;
+    text-align: left;
+  }
+  .radioGroup {
+    zoom: 0.8;
+    .radioItem {
+      margin-right: 10px;
+    }
+  }
+}
+
+.btnList {
+  padding: 0 40px;
+  gap: 20px;
+}
