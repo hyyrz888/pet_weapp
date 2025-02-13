@@ -1,3 +1,5 @@
+import { Label } from "@tarojs/components";
+
 const formList = [
   {
     label: "用户昵称",
@@ -20,7 +22,7 @@ const formList = [
   {
     label: "手机号",
     prop: "phone",
-    type: "inputNumber",
+    type: "phone",
     itemProps: {
       placeholder: "请输入手机号",
     },
@@ -28,26 +30,39 @@ const formList = [
   },
   {
     label: "基础服务",
-    prop: "username",
-    type: "slot",
+    prop: "serviceId",
+    type: "tabs",
     itemProps: {
       placeholder: "请输入用户名",
     },
+    tabsTitle: ["上门服务", "预约服务"],
+    tabsOptions: [
+      {
+        id: 1,
+        label: "上门服务",
+        content: "1",
+      },
+      {
+        id: 2,
+        Label: "预约服务",
+        content: "2",
+      },
+    ],
     rules: [],
   },
   {
     label: "上门服务日期",
-    prop: "getDateTime",
-    type: "dateTime",
+    prop: "serviceDate",
+    type: "picker-date",
     itemProps: {
-      placeholder: "请输入用户名",
+      placeholder: "请选择上门服务日期",
     },
     rules: [],
   },
   {
     label: "收取地址",
     prop: "getAddress",
-    type: "input",
+    type: "textarea",
     itemProps: {
       placeholder: "请输入用户名",
     },
@@ -64,19 +79,27 @@ const formList = [
   },
   {
     label: "是否需要仪式",
-    prop: "username",
-    type: "checkbox",
-    itemProps: {
-      placeholder: "请输入用户名",
-    },
+    prop: "isRite",
+    type: "radio",
+    options: [
+      {
+        label: "是",
+        value: 1,
+        checked: true,
+      },
+      {
+        label: "否",
+        value: 0,
+      },
+    ],
     rules: [],
   },
   {
     label: "预约仪式日期",
     prop: "appointDate",
-    type: "datetime",
+    type: "picker-date",
     itemProps: {
-      placeholder: "请输入用户名",
+      placeholder: "请选择预约仪式日期",
     },
     rules: [],
   },
@@ -88,11 +111,11 @@ const formList = [
       {
         label: "邮寄寄送",
         value: "1",
-        checked: true,
       },
       {
         label: "自行提取",
         value: "2",
+        checked: true,
       },
       {
         label: "放弃处置",
@@ -103,17 +126,17 @@ const formList = [
   },
   {
     label: "自行提取时间",
-    prop: "pickTime",
-    type: "datePicker",
+    prop: "pickDate",
+    type: "picker-date",
     itemProps: {
-      placeholder: "请选择时间",
+      placeholder: "请选择自行提取时间",
     },
     rules: [],
   },
   {
     label: "寄送地址",
     prop: "postAddress",
-    type: "slot",
+    type: "textarea",
     itemProps: {
       placeholder: "点击获取当前位置",
     },

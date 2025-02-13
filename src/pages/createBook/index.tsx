@@ -3,9 +3,13 @@ import { useLoad } from "@tarojs/taro";
 import { formList } from "./model";
 import AddForm from "@/components/AddForm";
 import "./index.scss";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default () => {
+  const [formModel, setFormModel] = useState({
+    nickname: "11",
+    serviceId: "0",
+  });
   useLoad(() => {
     console.log("Page loaded.");
   });
@@ -17,7 +21,7 @@ export default () => {
 
   return (
     <View className="page-createBox pt-20">
-      <AddForm formList={formList}></AddForm>
+      <AddForm formList={formList} formModel={formModel}></AddForm>
     </View>
   );
 };
