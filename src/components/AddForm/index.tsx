@@ -17,7 +17,7 @@ import {
   AtList,
   AtListItem,
   AtSegmentedControl,
-  AtCheckbox,
+  AtMessage,
 } from "taro-ui";
 import DateTimePicker from "@/components/DateTimePicker";
 import "./index.scss";
@@ -89,8 +89,49 @@ export default function AddForm(props) {
     });
   };
 
-  const onSubmit = (value) => {
-    console.log(formData);
+  const validateForm = (): boolean => {
+    let isValid = true;
+    const newState = { ...formData };
+
+    formList.forEach((item) => {
+      const currentValue = formData[item.prop] || "";
+      let errorMsg = "";
+
+      if (item.itemProps?.required && !currentValue.trim()) {
+        errorMsg = `${item.label}不能为空`;
+      } else if (item.validator) {
+        errorMsg = item.validator(currentValue) || "";
+      }
+
+      if (errorMsg) {
+        isValid = false;
+        item.error = true;
+        //   newState[item.prop] = {
+        //     ...newState[item.prop],
+        //     error: errorMsg,
+        //   };
+      }
+    });
+
+    if (!isValid) {
+      Taro.atMessage({
+        message: "请检查表单输入",
+        type: "error",
+      });
+    }
+
+    setFormData(newState);
+    return isValid;
+  };
+
+  const onSubmit = () => {
+    if (!validateForm()) return;
+    const formValues = Object.keys(formData).reduce((acc, key) => {
+      acc[key] = formData[key] || "";
+      return acc;
+    }, {} as Record<string, string>);
+
+    console.log(formValues);
   };
   const onReset = (value) => {
     console.log(value);
@@ -131,8 +172,10 @@ export default function AddForm(props) {
               key={index}
               name={formItem.prop}
               type={formItem.type}
+              error={formItem?.error || false}
               title={formItem.label}
               placeholder={formItem.itemProps.placeholder}
+              required={formItem.itemProps?.required || false}
               value={formData[formItem.prop]}
               onChange={(e) => handleChange(e, formItem)}
             />
@@ -142,15 +185,24 @@ export default function AddForm(props) {
               key={index}
               name={formItem.prop}
               title={formItem.label}
+              error={formItem?.error || false}
               placeholder={formItem.itemProps.placeholder}
               value={formData[formItem.name]}
               onChange={(e) => handleChange(e, formItem)}
+              required={formItem.itemProps?.required || false}
               maxLength={formItem.maxLength || 12}
             />
           ) : null}
           {formItem.type === "radio" ? (
-            <View className="flex customItem">
-              <View className="label">{formItem.label}</View>
+            <View className="flex customItem justify-between">
+              <View className="label">
+                {formItem.itemProps?.required ? (
+                  <Text className="text-color-red">* </Text>
+                ) : null}
+                <Text className={`${formItem.error ? "text-color-red" : ""}`}>
+                  {formItem.label}
+                </Text>
+              </View>
               <RadioGroup
                 name={formItem.prop}
                 className="radioGroup"
@@ -170,7 +222,14 @@ export default function AddForm(props) {
           ) : null}
           {formItem.type === "textarea" ? (
             <View className="flex customItem">
-              <View className="label">{formItem.label}</View>
+              <View className="label">
+                {formItem.itemProps?.required ? (
+                  <Text className="text-color-red">* </Text>
+                ) : null}
+                <Text className={`${formItem.error ? "text-color-red" : ""}`}>
+                  {formItem.label}
+                </Text>
+              </View>
               <AtTextarea
                 key={index}
                 placeholder={formItem.itemProps.placeholder}
@@ -197,7 +256,18 @@ export default function AddForm(props) {
               <AtList>
                 <AtListItem
                   onClick={() => handleListClick(formItem)}
-                  title={formItem.label}
+                  title={
+                    <View>
+                      {formItem.itemProps?.required ? (
+                        <Text className="text-color-red">* </Text>
+                      ) : null}
+                      <Text
+                        className={`${formItem.error ? "text-color-red" : ""}`}
+                      >
+                        {formItem.label}
+                      </Text>
+                    </View>
+                  }
                   arrow="right"
                   extraText={
                     formData[formItem.prop] || formItem.itemProps.placeholder
@@ -214,14 +284,38 @@ export default function AddForm(props) {
               value={formData[formItem.prop]}
             >
               <AtList>
-                <AtListItem title={formItem.label} arrow="right" />
+                <AtListItem
+                  title={
+                    <View>
+                      {formItem.itemProps?.required ? (
+                        <Text className="text-color-red">* </Text>
+                      ) : null}
+                      <Text
+                        className={`${formItem.error ? "text-color-red" : ""}`}
+                      >
+                        {formItem.label}
+                      </Text>
+                    </View>
+                  }
+                  arrow="right"
+                  extraText={
+                    formData[formItem.prop] ?? formItem.itemProps.placeholder
+                  }
+                />
               </AtList>
             </Picker>
           ) : null}
           {formItem.type === "tabs" ? (
             <View className="tabs customItem">
               <View className="flex">
-                <View className="label">{formItem.label}</View>
+                <View className="label">
+                  {formItem.itemProps?.required ? (
+                    <Text className="text-color-red">* </Text>
+                  ) : null}
+                  <Text className={`${formItem.error ? "text-color-red" : ""}`}>
+                    {formItem.label}
+                  </Text>
+                </View>
                 <AtSegmentedControl
                   values={formItem.tabsTitle}
                   current={tabIndex}
@@ -256,6 +350,7 @@ export default function AddForm(props) {
         <Text>slot</Text>
       </DateTimePicker>
 
+      <AtMessage />
       <View className="flex btnList">
         {/* <AtButton className="flex-1" formType="reset" type="secondary">
           重置

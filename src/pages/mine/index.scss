@@ -1,0 +1,20 @@
+.page-mine {
+  padding-top: 100px;
+  .header {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    .avatar {
+      width: 200px;
+      height: 200px;
+    }
+    .nickname {
+      color: #000;
+      margin-top: 40px;
+      font-size: 32px;
+    }
+  }
+  .toolsList {
+    margin-top: 60px;
+  }
+}

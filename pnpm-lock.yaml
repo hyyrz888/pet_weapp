@@ -56,6 +56,9 @@ importers:
       '@tarojs/taro':
         specifier: 4.0.9
         version: 4.0.9(@tarojs/components@4.0.9(@tarojs/helper@4.0.9)(@types/react@18.3.18)(postcss@8.5.1)(react@18.3.1)(rollup@3.29.5))(@tarojs/helper@4.0.9)(@tarojs/shared@4.0.9)(@types/react@18.3.18)(postcss@8.5.1)(rollup@3.29.5)
+      dayjs:
+        specifier: ^1.11.13
+        version: 1.11.13
       react:
         specifier: ^18.0.0
         version: 18.3.1
@@ -13182,7 +13185,7 @@ snapshots:
       '@babel/register': 7.25.9(@babel/core@7.26.7)
       babel-core: 7.0.0-bridge.0(@babel/core@7.26.7)
       colors: 1.4.0
-      flow-parser: 0.121.0
+      flow-parser: 0.259.1
       graceful-fs: 4.2.11
       micromatch: 3.1.10
       neo-async: 2.6.2
@@ -13207,7 +13210,7 @@ snapshots:
       '@babel/register': 7.25.9(@babel/core@7.26.7)
       babel-core: 7.0.0-bridge.0(@babel/core@7.26.7)
       chalk: 4.1.2
-      flow-parser: 0.206.0
+      flow-parser: 0.259.1
       graceful-fs: 4.2.11
       micromatch: 4.0.8
       neo-async: 2.6.2

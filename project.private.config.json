@@ -9,6 +9,20 @@
     "miniprogram": {
       "list": [
         {
+          "name": "pages/mine/index",
+          "pathName": "pages/mine/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "pages/createBook/additionalService/index",
+          "pathName": "pages/createBook/additionalService/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
           "name": "pages/createBook/index",
           "pathName": "pages/createBook/index",
           "query": "",

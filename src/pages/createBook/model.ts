@@ -16,6 +16,7 @@ const formList = [
     type: "input",
     itemProps: {
       placeholder: "请输入用户名",
+      required: true,
     },
     rules: [],
   },
@@ -147,7 +148,8 @@ const formList = [
     prop: "petType",
     type: "multiSelector",
     itemProps: {
-      placeholder: "请输入用户名",
+      placeholder: "请选择",
+      required: true,
     },
     options: [
       ["猫", "脊柱动物"],
