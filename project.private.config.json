@@ -9,6 +9,13 @@
     "miniprogram": {
       "list": [
         {
+          "name": "pages/mine/pets/index",
+          "pathName": "pages/mine/pets/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
           "name": "pages/mine/index",
           "pathName": "pages/mine/index",
           "query": "",

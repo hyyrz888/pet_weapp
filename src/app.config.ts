@@ -6,6 +6,13 @@ export default defineAppConfig({
     "pages/otherBookService/index",
     "pages/createBook/index",
     "pages/createBook/additionalService/index",
+    "pages/mine/complain/index",
+    "pages/mine/complain/list/index",
+    "pages/mine/complain/create/index",
+    "pages/mine/complain/list/detail/index",
+    "pages/mine/pets/index",
+    "pages/mine/pets/add/index",
+    "pages/mine/profile/index",
   ],
 
   tabBar: {
@@ -25,6 +32,7 @@ export default defineAppConfig({
         text: "个人中心",
       },
     ],
+
     color: "#000",
     selectedColor: "#72C8F6",
   },

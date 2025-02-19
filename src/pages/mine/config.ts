@@ -1,10 +1,10 @@
 const menuList = [
   {
-    pagePath: "pages/shop/index",
+    pagePath: "./profile/index",
     text: "个人信息",
   },
   {
-    pagePath: "pages/index/index",
+    pagePath: "./pets/index",
     text: "我的爱宠",
   },
   {
@@ -16,7 +16,7 @@ const menuList = [
     text: "售后申请",
   },
   {
-    pagePath: "pages/mine/index",
+    pagePath: "./complain/index",
     text: "投诉建议",
   },
   {
