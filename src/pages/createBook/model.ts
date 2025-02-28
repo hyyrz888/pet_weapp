@@ -31,7 +31,7 @@ const formList = [
   },
   {
     label: "基础服务",
-    prop: "serviceId",
+    prop: "menu",
     type: "tabs",
     itemProps: {
       placeholder: "请输入用户名",
@@ -53,7 +53,7 @@ const formList = [
   },
   {
     label: "上门服务日期",
-    prop: "serviceDate",
+    prop: "expressDateTime",
     type: "picker-date",
     itemProps: {
       placeholder: "请选择上门服务日期",
@@ -63,9 +63,9 @@ const formList = [
   {
     label: "收取地址",
     prop: "getAddress",
-    type: "textarea",
+    type: "location",
     itemProps: {
-      placeholder: "请输入用户名",
+      placeholder: "点击获取地址",
     },
     rules: [],
   },
@@ -85,24 +85,25 @@ const formList = [
     options: [
       {
         label: "是",
-        value: 1,
+        value: "1",
         checked: true,
       },
       {
         label: "否",
-        value: 0,
+        value: "0",
       },
     ],
     rules: [],
   },
   {
     label: "预约仪式日期",
-    prop: "appointDate",
+    prop: "riteDateTime",
     type: "picker-date",
     itemProps: {
       placeholder: "请选择预约仪式日期",
     },
     rules: [],
+    hidden: false,
   },
   {
     label: "遗物处理方式",
@@ -127,7 +128,7 @@ const formList = [
   },
   {
     label: "自行提取时间",
-    prop: "pickDate",
+    prop: "bookDateTime",
     type: "picker-date",
     itemProps: {
       placeholder: "请选择自行提取时间",
@@ -145,7 +146,7 @@ const formList = [
   },
   {
     label: "爱宠类型",
-    prop: "petType",
+    prop: "type",
     type: "multiSelector",
     itemProps: {
       placeholder: "请选择",
@@ -177,10 +178,10 @@ const formList = [
   },
   {
     label: "备注",
-    prop: "remark",
+    prop: "mark",
     type: "textarea",
     itemProps: {
-      placeholder: "请输入用户名",
+      placeholder: "请输入",
     },
     rules: [],
   },

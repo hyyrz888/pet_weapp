@@ -1,11 +1,17 @@
+import { useState } from "react";
 import { View, Text } from "@tarojs/components";
 import { useLoad, navigateTo } from "@tarojs/taro";
 import { AtAvatar, AtButton } from "taro-ui";
+import { list } from "@/apis/pet";
 import "./index.scss";
 
 export default function Pets() {
+  const [pets, setPets] = useState([]);
   useLoad(() => {
     console.log("Page loaded.");
+    list().then((res) => {
+      setPets(res.data);
+    });
   });
 
   const handleAddPet = () => {
@@ -13,17 +19,15 @@ export default function Pets() {
   };
   return (
     <View className="page-pets">
-      {Array(2)
-        .fill(1)
-        .map((item, index) => (
-          <View className="pet-item" key={index}>
-            <View className="left">
-              <AtAvatar circle></AtAvatar>
-              <Text>屁屁</Text>
-            </View>
-            <Text>12个月</Text>
+      {pets.map((item, index) => (
+        <View className="pet-item" key={index}>
+          <View className="left">
+            <AtAvatar circle></AtAvatar>
+            <Text>屁屁</Text>
           </View>
-        ))}
+          <Text>12个月</Text>
+        </View>
+      ))}
       <AtButton onClick={handleAddPet} type="primary">
         添加爱宠
       </AtButton>

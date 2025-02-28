@@ -8,11 +8,11 @@ const menuList = [
     text: "我的爱宠",
   },
   {
-    pagePath: "pages/mine/index",
+    pagePath: "./appointList/index",
     text: "我的预约",
   },
   {
-    pagePath: "pages/mine/index",
+    pagePath: "./afterSales/index",
     text: "售后申请",
   },
   {

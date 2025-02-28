@@ -9,6 +9,27 @@
     "miniprogram": {
       "list": [
         {
+          "name": "pages/mine/profile/index",
+          "pathName": "pages/mine/profile/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "pages/mine/index",
+          "pathName": "pages/mine/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "pages/createBook/index",
+          "pathName": "pages/createBook/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
           "name": "pages/mine/pets/index",
           "pathName": "pages/mine/pets/index",
           "query": "",

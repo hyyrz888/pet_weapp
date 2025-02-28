@@ -1,10 +1,18 @@
+import { useEffect } from "react";
 import { View, Text } from "@tarojs/components";
 import { useLoad, navigateTo } from "@tarojs/taro";
+import { list } from "@/apis/advise";
 import "./index.scss";
 
 export default function List() {
   useLoad(() => {
     console.log("Page loaded.");
+  });
+
+  useEffect(() => {
+    list().then((res) => {
+      console.log(res);
+    });
   });
 
   return (

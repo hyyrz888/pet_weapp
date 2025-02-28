@@ -1,8 +1,9 @@
+import { useState } from "react";
 import { View } from "@tarojs/components";
 import { useLoad } from "@tarojs/taro";
 import { AtInput, AtButton } from "taro-ui";
+import { add } from "@/apis/pet";
 import "./index.scss";
-import { useState } from "react";
 
 export default function Add() {
   useLoad(() => {
@@ -10,17 +11,24 @@ export default function Add() {
   });
 
   const [formData, setFormData] = useState({
-    name: "",
+    nickname: "",
     type: "",
     weight: "",
     age: "",
     image: "",
+    subType: "xxx",
   });
+
+  const handleAdd = () => {
+    add(formData).then((res) => {
+      console.log(res);
+    });
+  };
 
   const formConfig = [
     {
       title: "爱宠昵称",
-      key: "name",
+      key: "nickname",
       type: "text",
       placeholder: "请输入",
     },
@@ -74,7 +82,9 @@ export default function Add() {
         />
       ))}
       <View className="pl-20 pr-20 mt-30">
-        <AtButton type="primary">添加</AtButton>
+        <AtButton type="primary" onClick={handleAdd}>
+          添加
+        </AtButton>
       </View>
     </View>
   );

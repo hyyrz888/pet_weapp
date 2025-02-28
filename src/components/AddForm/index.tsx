@@ -1,4 +1,4 @@
-import Taro from "@tarojs/taro";
+import Taro, { getLocation } from "@tarojs/taro";
 import { useEffect, useState } from "react";
 import {
   Radio,
@@ -20,9 +20,10 @@ import {
   AtMessage,
 } from "taro-ui";
 import DateTimePicker from "@/components/DateTimePicker";
+import QQMapWX from "@/utils/qqmap-wx-jssdk.min.js";
 import "./index.scss";
 export default function AddForm(props) {
-  const { formList = [], formModel = {} } = props;
+  const { formList = [], formModel = {}, children, handleSubmit } = props;
 
   const [otherConfig, setOtherConfig] = useState({
     dtPicker: {
@@ -33,6 +34,7 @@ export default function AddForm(props) {
       },
     },
   });
+  const [_formList, setFormList] = useState(formList);
   const [formData, setFormData] = useState({
     ...formModel,
   });
@@ -44,30 +46,113 @@ export default function AddForm(props) {
     if (formItem?.type === "tabs") {
       setTabIndex(e);
       _formData[formItem.prop] = formItem.tabsOptions[e]?.id;
+      setFormData({
+        ..._formData,
+        [formItem.prop]: formItem.tabsOptions[e]?.id,
+      });
     } else if (formItem?.type === "radio") {
       _formData[formItem.prop] = e.detail.value;
+      const curObj = _formList.find((item) => item.prop === formItem.prop);
+
+      curObj?.options.forEach((item) => {
+        item.checked = item.value === e.detail.value;
+      });
+      // children?.handleRiteChange?.(e.detail.value);
+      _formList.find((item) => item.prop === "appointDate").hidden =
+        e.detail.value === "0";
+      setFormData({
+        ..._formData,
+        [formItem.prop]: e.detail.value,
+      });
+      setFormList([..._formList]);
+    } else if (formItem?.type === "multiSelector") {
+      const selectValues = e.detail.value;
+      const getLabel =
+        formItem.options[0][selectValues[0]] +
+        "/" +
+        formItem.options[1][selectValues[1]];
+      formData[formItem.prop] = getLabel;
+      setFormData({
+        ..._formData,
+        [formItem.prop]: getLabel,
+      });
     } else {
       _formData[formItem.prop] = e;
+      setFormData({
+        ..._formData,
+        [formItem.prop]: e,
+      });
     }
     console.log(_formData);
-    setFormData(_formData);
   };
 
+  const getlocal = (formItem: Record<string, any>) => {
+    const QQMapSDK = new QQMapWX({
+      key: "S32BZ-TYNL4-JDVUZ-XMLOV-DIIHS-WBF4J",
+      mapStyleId: "style1", // 个性化地图
+    });
+    getLocation({
+      type: "gcj02",
+      altitude: true,
+      success: function (res) {
+        console.log(res.longitude);
+        QQMapSDK.reverseGeocoder({
+          location: {
+            latitude: res.latitude,
+            longitude: res.longitude,
+          },
+          success: function (res) {
+            console.log(res);
+            const {
+              result: {
+                // address,
+                address_component: { city, district, province, street },
+              },
+            } = res;
+            setFormData({
+              ...formData,
+              [formItem.prop]: `${province}-${city}-${district}`,
+              address: street,
+              province,
+              city,
+              district,
+            });
+          },
+        });
+        // chooseLocation({
+        //   latitude: res.latitude,
+        //   longitude: res.longitude,
+        //   success: function (res) {
+        //     console.log(res, "success");
+        //   },
+        // });
+      },
+    });
+  };
   const handleListClick = (formItem) => {
     console.log("item click", formItem);
-    setOtherConfig((state: any) => {
-      return {
-        ...state,
-        dtPicker: {
-          ...state.dtPicker,
-          isOpened: true,
-          data: {
-            ...state.dtPicker.data,
-            formProp: formItem.prop,
+
+    if (formItem.type === "picker-date") {
+      setOtherConfig((state: any) => {
+        return {
+          ...state,
+          dtPicker: {
+            ...state.dtPicker,
+            isOpened: true,
+            data: {
+              ...state.dtPicker.data,
+              formProp: formItem.prop,
+            },
           },
-        },
-      };
-    });
+        };
+      });
+    } else if (formItem.type === "location") {
+      _formList.find(
+        (formItem) => formItem.type === "location"
+      ).itemProps.placeholder = "正在获取位置...";
+      setFormList([..._formList]);
+      getlocal(formItem);
+    }
   };
 
   const handleCloseDateTimePicker = () => {
@@ -92,8 +177,9 @@ export default function AddForm(props) {
   const validateForm = (): boolean => {
     let isValid = true;
     const newState = { ...formData };
+    console.log("validateForm", formData);
 
-    formList.forEach((item) => {
+    _formList.forEach((item) => {
       const currentValue = formData[item.prop] || "";
       let errorMsg = "";
 
@@ -123,7 +209,7 @@ export default function AddForm(props) {
     setFormData(newState);
     return isValid;
   };
-
+  //提交表单
   const onSubmit = () => {
     if (!validateForm()) return;
     const formValues = Object.keys(formData).reduce((acc, key) => {
@@ -132,6 +218,7 @@ export default function AddForm(props) {
     }, {} as Record<string, string>);
 
     console.log(formValues);
+    handleSubmit?.(formValues);
   };
   const onReset = (value) => {
     console.log(value);
@@ -140,9 +227,12 @@ export default function AddForm(props) {
 
   //初始化数据
   useEffect(() => {
-    formList?.forEach((item) => {
+    console.log("初始化");
+    const collectData = {};
+    _formList?.forEach((item) => {
       if (item.type === "radio") {
         // Check if
+
         if (!!formData[item.prop]) {
           const selectIndex = item.options.findIndex(
             (item) => item.value === formData[item.prop]
@@ -150,11 +240,11 @@ export default function AddForm(props) {
           item.options[selectIndex].checked = true;
           return;
         }
-        const collectData = {};
         collectData[item.prop] =
           formData[item.prop] ??
           (item.options.find((option) => option.checked)?.value ||
             item.options[0].value);
+
         setFormData({
           ...formData,
           ...collectData,
@@ -164,83 +254,87 @@ export default function AddForm(props) {
   }, []);
 
   return (
-    <AtForm className="addForm" onSubmit={onSubmit} onReset={onReset}>
-      {formList.map((formItem, index) => (
-        <>
-          {["number", "input"].includes(formItem.type) ? (
-            <AtInput
-              key={index}
-              name={formItem.prop}
-              type={formItem.type}
-              error={formItem?.error || false}
-              title={formItem.label}
-              placeholder={formItem.itemProps.placeholder}
-              required={formItem.itemProps?.required || false}
-              value={formData[formItem.prop]}
-              onChange={(e) => handleChange(e, formItem)}
-            />
-          ) : null}
-          {formItem.type === "phone" ? (
-            <AtInput
-              key={index}
-              name={formItem.prop}
-              title={formItem.label}
-              error={formItem?.error || false}
-              placeholder={formItem.itemProps.placeholder}
-              value={formData[formItem.name]}
-              onChange={(e) => handleChange(e, formItem)}
-              required={formItem.itemProps?.required || false}
-              maxLength={formItem.maxLength || 12}
-            />
-          ) : null}
-          {formItem.type === "radio" ? (
-            <View className="flex customItem justify-between">
-              <View className="label">
-                {formItem.itemProps?.required ? (
-                  <Text className="text-color-red">* </Text>
-                ) : null}
-                <Text className={`${formItem.error ? "text-color-red" : ""}`}>
-                  {formItem.label}
-                </Text>
-              </View>
-              <RadioGroup
-                name={formItem.prop}
-                className="radioGroup"
-                onChange={(e) => handleChange(e, formItem)}
-              >
-                {formItem?.options?.map((item, i) => {
-                  return (
-                    <Label className="radioItem" for={i} key={i}>
-                      <Radio value={item.value} checked={item.checked}>
-                        {item.label}
-                      </Radio>
-                    </Label>
-                  );
-                })}
-              </RadioGroup>
-            </View>
-          ) : null}
-          {formItem.type === "textarea" ? (
-            <View className="flex customItem">
-              <View className="label">
-                {formItem.itemProps?.required ? (
-                  <Text className="text-color-red">* </Text>
-                ) : null}
-                <Text className={`${formItem.error ? "text-color-red" : ""}`}>
-                  {formItem.label}
-                </Text>
-              </View>
-              <AtTextarea
+    <>
+      qqqqq-{JSON.stringify(otherConfig.dtPicker.isOpened)}
+      <View>--------</View>
+      formData-{JSON.stringify(formData)}
+      <AtForm className="addForm" onSubmit={onSubmit} onReset={onReset}>
+        {_formList.map((formItem, index) => (
+          <>
+            {["number", "input"].includes(formItem.type) ? (
+              <AtInput
                 key={index}
+                name={formItem.prop}
+                type={formItem.type}
+                error={formItem?.error || false}
+                title={formItem.label}
                 placeholder={formItem.itemProps.placeholder}
+                required={formItem.itemProps?.required || false}
                 value={formData[formItem.prop]}
                 onChange={(e) => handleChange(e, formItem)}
               />
-            </View>
-          ) : null}
-          {formItem.type === "picker-date" ? (
-            <View>
-              {/* <Picker
+            ) : null}
+            {formItem.type === "phone" ? (
+              <AtInput
+                key={index}
+                name={formItem.prop}
+                title={formItem.label}
+                error={formItem?.error || false}
+                placeholder={formItem.itemProps.placeholder}
+                value={formData[formItem.prop]}
+                onChange={(e) => handleChange(e, formItem)}
+                required={formItem.itemProps?.required || false}
+                maxLength={formItem.maxLength || 12}
+              />
+            ) : null}
+            {formItem.type === "radio" ? (
+              <View className="flex customItem justify-between">
+                <View className="label">
+                  {formItem.itemProps?.required ? (
+                    <Text className="error-dot text-color-red">* </Text>
+                  ) : null}
+                  <Text className={`${formItem.error ? "text-color-red" : ""}`}>
+                    {formItem.label}
+                  </Text>
+                </View>
+                <RadioGroup
+                  name={formItem.prop}
+                  className="radioGroup"
+                  onChange={(e) => handleChange(e, formItem)}
+                >
+                  {formItem?.options?.map((item, i) => {
+                    return (
+                      <Label className="radioItem" for={i}>
+                        <Radio value={item.value} checked={item.checked}>
+                          {item.label}
+                        </Radio>
+                      </Label>
+                    );
+                  })}
+                </RadioGroup>
+              </View>
+            ) : null}
+            {formItem.type === "textarea" ? (
+              <View className="flex customItem">
+                <View className="label">
+                  {formItem.itemProps?.required ? (
+                    <Text className="error-dot text-color-red">* </Text>
+                  ) : null}
+                  <Text className={`${formItem.error ? "text-color-red" : ""}`}>
+                    {formItem.label}
+                  </Text>
+                </View>
+                <AtTextarea
+                  key={index}
+                  placeholder={formItem.itemProps.placeholder}
+                  value={formData[formItem.prop]}
+                  onChange={(e) => handleChange(e, formItem)}
+                />
+              </View>
+            ) : null}
+            {formItem.type === "picker-date" && !formItem.hidden ? (
+              <View>
+                {/* <Picker
                 mode={formItem.type.split("-")[1]}
                 onChange={(e) => handleChange(e, formItem)}
                 value={formData[formItem.prop]}
@@ -253,93 +347,145 @@ export default function AddForm(props) {
                   />
                 </AtList>
               </Picker> */}
-              <AtList>
-                <AtListItem
-                  onClick={() => handleListClick(formItem)}
-                  title={
-                    <View>
-                      {formItem.itemProps?.required ? (
-                        <Text className="text-color-red">* </Text>
-                      ) : null}
-                      <Text
-                        className={`${formItem.error ? "text-color-red" : ""}`}
-                      >
-                        {formItem.label}
-                      </Text>
-                    </View>
-                  }
-                  arrow="right"
-                  extraText={
-                    formData[formItem.prop] || formItem.itemProps.placeholder
-                  }
-                />
-              </AtList>
-            </View>
-          ) : null}
-          {formItem.type === "multiSelector" ? (
-            <Picker
-              range={formItem?.options}
-              mode="multiSelector"
-              onChange={(e) => handleChange(e, formItem)}
-              value={formData[formItem.prop]}
-            >
-              <AtList>
-                <AtListItem
-                  title={
-                    <View>
-                      {formItem.itemProps?.required ? (
-                        <Text className="text-color-red">* </Text>
-                      ) : null}
-                      <Text
-                        className={`${formItem.error ? "text-color-red" : ""}`}
-                      >
-                        {formItem.label}
-                      </Text>
-                    </View>
-                  }
-                  arrow="right"
-                  extraText={
-                    formData[formItem.prop] ?? formItem.itemProps.placeholder
-                  }
-                />
-              </AtList>
-            </Picker>
-          ) : null}
-          {formItem.type === "tabs" ? (
-            <View className="tabs customItem">
-              <View className="flex">
-                <View className="label">
-                  {formItem.itemProps?.required ? (
-                    <Text className="text-color-red">* </Text>
-                  ) : null}
-                  <Text className={`${formItem.error ? "text-color-red" : ""}`}>
-                    {formItem.label}
-                  </Text>
-                </View>
-                <AtSegmentedControl
-                  values={formItem.tabsTitle}
-                  current={tabIndex}
-                  onClick={(e) => handleChange(e, formItem)}
-                ></AtSegmentedControl>
+                <AtList>
+                  <AtListItem
+                    onClick={() => handleListClick(formItem)}
+                    title={
+                      <View>
+                        {formItem.itemProps?.required ? (
+                          <Text className="error-dot text-color-red">* </Text>
+                        ) : null}
+                        <Text
+                          className={`${
+                            formItem.error ? "text-color-red" : ""
+                          }`}
+                        >
+                          {formItem.label}
+                        </Text>
+                      </View>
+                    }
+                    arrow="right"
+                    extraText={
+                      formData[formItem.prop] || formItem.itemProps.placeholder
+                    }
+                  />
+                </AtList>
               </View>
-              {
-                <View className="tab-content">
-                  {formItem.tabsOptions[tabIndex].content || "暫無內容"}
+            ) : null}
+            {formItem.type === "location" ? (
+              <View>
+                <AtList>
+                  <AtListItem
+                    onClick={() => handleListClick(formItem)}
+                    title={
+                      <View>
+                        {formItem.itemProps?.required ? (
+                          <Text className="error-dot text-color-red">* </Text>
+                        ) : null}
+                        <Text
+                          className={`${
+                            formItem.error ? "text-color-red" : ""
+                          }`}
+                        >
+                          {formItem.label}
+                        </Text>
+                      </View>
+                    }
+                    extraText={
+                      formData[formItem.prop] || formItem.itemProps.placeholder
+                    }
+                  />
+                </AtList>
+              </View>
+            ) : null}
+            {formItem.type === "multiSelector" ? (
+              <Picker
+                range={formItem?.options}
+                mode="multiSelector"
+                onChange={(e) => handleChange(e, formItem)}
+                value={formData[formItem.prop]}
+              >
+                <AtList>
+                  <AtListItem
+                    title={
+                      <View>
+                        {formItem.itemProps?.required ? (
+                          <Text
+                            className={`error-dot ${
+                              !formItem[formItem.prop] ? "text-color-red" : ""
+                            }`}
+                          >
+                            *{" "}
+                          </Text>
+                        ) : null}
+                        <Text
+                          className={`${
+                            formItem.error ? "text-color-red" : ""
+                          }`}
+                        >
+                          {formItem.label}
+                        </Text>
+                      </View>
+                    }
+                    arrow="right"
+                    extraText={
+                      formData[formItem.prop] ?? formItem.itemProps.placeholder
+                    }
+                  />
+                </AtList>
+              </Picker>
+            ) : null}
+            {formItem.type === "tabs" ? (
+              <View className="tabs customItem">
+                <View className="flex">
+                  <View className="label">
+                    {formItem.itemProps?.required ? (
+                      <Text className="error-dot text-color-red">* </Text>
+                    ) : null}
+                    <Text
+                      className={`${formItem.error ? "text-color-red" : ""}`}
+                    >
+                      {formItem.label}
+                    </Text>
+                  </View>
+                  <AtSegmentedControl
+                    values={formItem.tabsTitle}
+                    current={tabIndex}
+                    onClick={(e) => handleChange(e, formItem)}
+                  ></AtSegmentedControl>
                 </View>
-              }
-            </View>
-          ) : null}
-        </>
-      ))}
+                {
+                  <View className="tab-content">
+                    {formItem.tabsOptions[tabIndex].content || "暫無內容"}
+                  </View>
+                }
+              </View>
+            ) : null}
+          </>
+        ))}
 
-      {/* 协议 */}
-      <View className="flex justify-center mb-20">
-        <Label className="checkbox">
-          <Checkbox value="1" color="#004ebf" name="agreement" checked={true} />
-          用户购买套餐协议
-        </Label>
-      </View>
+        {/* 协议 */}
+        <View className="flex justify-center mb-20">
+          <Label className="checkbox">
+            <Checkbox
+              value="1"
+              color="#004ebf"
+              name="agreement"
+              checked={true}
+            />
+            用户购买套餐协议
+          </Label>
+        </View>
 
+        <View className="flex btnList">
+          {/* <AtButton className="flex-1" formType="reset" type="secondary">
+          重置
+        </AtButton> */}
+          <AtButton className="flex-1" formType="submit" type="primary">
+            下一步
+          </AtButton>
+        </View>
+      </AtForm>
       {/* 日期时间组件 */}
       <DateTimePicker
         isOpened={otherConfig.dtPicker.isOpened}
@@ -349,16 +495,7 @@ export default function AddForm(props) {
       >
         <Text>slot</Text>
       </DateTimePicker>
-
       <AtMessage />
-      <View className="flex btnList">
-        {/* <AtButton className="flex-1" formType="reset" type="secondary">
-          重置
-        </AtButton> */}
-        <AtButton className="flex-1" formType="submit" type="primary">
-          下一步
-        </AtButton>
-      </View>
-    </AtForm>
+    </>
   );
 }

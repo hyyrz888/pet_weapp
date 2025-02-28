@@ -5,9 +5,15 @@
   padding-left: 32px;
   padding-right: 32px;
 }
+.at-input__title {
+  font-size: 28px;
+}
+.at-list__item {
+  font-size: 28px;
+}
 
 .customItem {
-  padding: 24px 32px;
+  padding: 24px;
   .label {
     display: block;
     margin-right: 32rpx;
@@ -15,6 +21,7 @@
     font-size: 28rpx;
     line-height: 1.5;
     text-align: left;
+    color: #333;
   }
   .radioGroup {
     zoom: 0.8;
