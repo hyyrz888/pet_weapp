@@ -10,7 +10,10 @@ export default function Pets() {
   useLoad(() => {
     console.log("Page loaded.");
     list().then((res) => {
-      setPets(res.data);
+      const { data = [] } = res;
+      if (data) {
+        setPets(data);
+      }
     });
   });
 

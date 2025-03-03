@@ -1,5 +1,10 @@
 page {
   padding-bottom: env(safe-area-inset-bottom);
+  box-sizing: border-box;
+  height: 100%;
+}
+* {
+  box-sizing: border-box;
 }
 .flex {
   display: flex;
@@ -100,4 +105,12 @@ page {
 .at-input {
   padding-left: 24px;
   padding-right: 24px;
+}
+
+.text-888 {
+  color: #888;
+}
+
+.text-price {
+  color: #ff4a4a;
 }

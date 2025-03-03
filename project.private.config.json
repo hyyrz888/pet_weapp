@@ -3,11 +3,26 @@
   "projectname": "miniapp",
   "setting": {
     "compileHotReLoad": true,
-    "urlCheck": false
+    "urlCheck": false,
+    "skylineRenderEnable": true
   },
   "condition": {
     "miniprogram": {
       "list": [
+        {
+          "name": "pages/mine/complain/create/index",
+          "pathName": "pages/mine/complain/create/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "pages/mine/appointList/index",
+          "pathName": "pages/mine/appointList/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
         {
           "name": "pages/mine/profile/index",
           "pathName": "pages/mine/profile/index",
@@ -59,5 +74,6 @@
         }
       ]
     }
-  }
+  },
+  "libVersion": "3.7.9"
 }

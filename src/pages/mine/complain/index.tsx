@@ -9,8 +9,8 @@ export default function Complain() {
   });
 
   return (
-    <View className="complain">
-      <AtList>
+    <View className="pages-complain">
+      <AtList className="listItem">
         <AtListItem
           title="我要投诉"
           arrow="right"

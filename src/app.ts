@@ -1,8 +1,10 @@
 import { PropsWithChildren } from "react";
 import { useLaunch } from "@tarojs/taro";
+import "virtual:windi.css";
 import "./assets/css/_taro.scss";
 import "taro-ui/dist/style/index.scss"; // 全局引入一次即可
 import "./app.scss";
+// import "windi.css";
 
 function App({ children }: PropsWithChildren<any>) {
   useLaunch(() => {

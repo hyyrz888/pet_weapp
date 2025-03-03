@@ -9,12 +9,14 @@
     "enhance": false,
     "compileHotReLoad": false,
     "postcss": false,
-    "minified": false,
+    "minified": true,
     "babelSetting": {
       "ignore": [],
       "disablePlugins": [],
       "outputPath": ""
-    }
+    },
+    "condition": true,
+    "minifyWXML": true
   },
   "compileType": "miniprogram",
   "libVersion": "3.7.7",

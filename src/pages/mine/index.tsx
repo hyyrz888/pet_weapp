@@ -19,28 +19,30 @@ export default function Index() {
 
   return (
     <View className="page-mine">
-      <View className="header">
-        <AtAvatar
-          image="https://img.yzcdn.cn/vant/cat.jpeg"
-          circle
-          className="avatar"
-          size="large"
-        />
-        <Text className="nickname">我的昵称</Text>
-      </View>
-      <View className="toolsList">
-        <AtList>
-          {menuList.map((item, index) => (
-            <AtListItem
-              key={index}
-              className="toolsItem"
-              title={item.text}
-              arrow="right"
-              extraText={item.value || ""}
-              onClick={() => handleGoPage(item)}
-            ></AtListItem>
-          ))}
-        </AtList>
+      <View className="content">
+        <View className="header">
+          <AtAvatar
+            image="https://img.yzcdn.cn/vant/cat.jpeg"
+            circle
+            className="avatar"
+            size="large"
+          />
+          <Text className="nickname">我的昵称</Text>
+        </View>
+        <View className="toolsList">
+          <AtList>
+            {menuList.map((item, index) => (
+              <AtListItem
+                key={index}
+                className="toolsItem"
+                title={item.text}
+                arrow="right"
+                extraText={item.value || ""}
+                onClick={() => handleGoPage(item)}
+              ></AtListItem>
+            ))}
+          </AtList>
+        </View>
       </View>
     </View>
   );

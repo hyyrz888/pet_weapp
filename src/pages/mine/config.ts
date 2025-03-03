@@ -1,7 +1,7 @@
 const menuList = [
   {
     pagePath: "./profile/index",
-    text: "个人信息",
+    text: "家长信息",
   },
   {
     pagePath: "./pets/index",

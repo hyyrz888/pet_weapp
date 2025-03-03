@@ -1,20 +1,39 @@
 .page-mine {
-  padding-top: 100px;
+  padding-top: 400px;
+  background-color: #154e7b;
+  height: 100%;
+  .content {
+    position: relative;
+    padding-top: 100px;
+    background-color: #fff;
+    height: 100%;
+    border-top-left-radius: 40px;
+    border-top-right-radius: 40px;
+  }
   .header {
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, -80%);
+    z-index: 999;
     display: flex;
     align-items: center;
     flex-direction: column;
     .avatar {
-      width: 200px;
-      height: 200px;
+      border: 2px solid #fff;
+      width: 160px;
+      height: 160px;
     }
     .nickname {
       color: #000;
-      margin-top: 40px;
+      margin-top: 20px;
       font-size: 32px;
     }
   }
   .toolsList {
-    margin-top: 60px;
+    margin-top: 100px;
+    .item-content__info-title {
+      font-size: 28px;
+      font-weight: 600;
+    }
   }
 }

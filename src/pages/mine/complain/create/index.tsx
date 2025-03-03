@@ -19,16 +19,19 @@ export default function Create() {
   };
   return (
     <View className="page-complain-create">
-      <View className="mb-20">投诉建议</View>
+      <View className="mb-20 title">投诉建议</View>
       <AtTextarea
+        className="cls-textarea"
         value={content}
         onChange={setContent}
-        maxLength={120}
-        placeholder="请输入您的投诉内容"
+        maxLength={300}
+        placeholder="请输入您的建议"
       />
-      <AtButton type="primary" className="mt-30" onClick={handleSubmit}>
-        提交
-      </AtButton>
+      <View className="px-40px mt-80px">
+        <AtButton className="btn" circle onClick={handleSubmit}>
+          提交
+        </AtButton>
+      </View>
     </View>
   );
 }
