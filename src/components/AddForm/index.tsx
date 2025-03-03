@@ -346,7 +346,7 @@ export default forwardRef((props, ref) => {
                 >
                   {formItem?.options?.map((item, i) => {
                     return (
-                      <Label className="radioItem" for={i}>
+                      <Label className="radioItem" for={i} key={i}>
                         <Radio value={item.value} checked={item.checked}>
                           {item.label}
                         </Radio>
@@ -364,7 +364,7 @@ export default forwardRef((props, ref) => {
                 <Text></Text>
                 {formItem?.options?.map((item, i) => {
                   return (
-                    <Label className="checkboxItem" for={i}>
+                    <Label className="checkboxItem" for={i} key={i}>
                       <Checkbox value={item.value} checked={item.checked}>
                         {item.label}
                       </Checkbox>
