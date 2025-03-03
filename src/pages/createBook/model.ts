@@ -1,34 +1,58 @@
-import { Label } from "@tarojs/components";
-
-const formList = [
+const baseInfoFormList = [
   {
-    label: "用户昵称",
-    prop: "nickname",
-    type: "input",
-    itemProps: {
-      placeholder: "请输入用户名",
-    },
-    rules: [],
-  },
-  {
-    label: "用户姓名",
+    label: "联系人",
     prop: "username",
     type: "input",
     itemProps: {
-      placeholder: "请输入用户名",
-      required: true,
+      placeholder: "请填写联系人的名字",
+      // required: true,
     },
     rules: [],
   },
   {
-    label: "手机号",
+    label: "联系电话",
     prop: "phone",
     type: "phone",
     itemProps: {
-      placeholder: "请输入手机号",
+      placeholder: "请填写联系人的电话",
     },
     rules: [],
   },
+  {
+    label: "爱宠名字",
+    prop: "petname",
+    type: "input",
+    itemProps: {
+      placeholder: "请填写爱宠名字",
+    },
+    rules: [],
+  },
+  {
+    label: "爱宠类型",
+    prop: "type",
+    type: "multiSelector",
+    itemProps: {
+      placeholder: "请选择",
+      // required: true,
+    },
+    options: [
+      ["猫", "脊柱动物"],
+      ["英短", "金渐层", "田园猫", "银渐层", "比鲁斯"],
+    ],
+    rules: [],
+  },
+  {
+    label: "爱宠体重",
+    prop: "weight",
+    type: "digit",
+    itemProps: {
+      placeholder: "请输入数值",
+    },
+    rules: [],
+  },
+];
+
+const otherFormList = [
   {
     label: "基础服务",
     prop: "menu",
@@ -52,7 +76,7 @@ const formList = [
     rules: [],
   },
   {
-    label: "上门服务日期",
+    label: "日期选择", //"上门服务日期",
     prop: "expressDateTime",
     type: "picker-date",
     itemProps: {
@@ -60,24 +84,24 @@ const formList = [
     },
     rules: [],
   },
-  {
-    label: "收取地址",
-    prop: "getAddress",
-    type: "location",
-    itemProps: {
-      placeholder: "点击获取地址",
-    },
-    rules: [],
-  },
-  {
-    label: "详细地址",
-    prop: "address",
-    type: "textarea",
-    itemProps: {
-      placeholder: "请输入用户名",
-    },
-    rules: [],
-  },
+  // {
+  //   label: "收取地址",
+  //   prop: "getAddress",
+  //   type: "location",
+  //   itemProps: {
+  //     placeholder: "点击获取地址",
+  //   },
+  //   rules: [],
+  // },
+  // {
+  //   label: "详细地址",
+  //   prop: "address",
+  //   type: "textarea",
+  //   itemProps: {
+  //     placeholder: "请输入用户名",
+  //   },
+  //   rules: [],
+  // },
   {
     label: "是否需要仪式",
     prop: "isRite",
@@ -127,6 +151,18 @@ const formList = [
     rules: [],
   },
   {
+    label: "",
+    prop: "legcyWayCheck",
+    type: "checkbox",
+    options: [
+      {
+        label: "放弃处置无害化处理后遗留申明",
+        value: "1",
+      },
+    ],
+    hidden: true,
+  },
+  {
     label: "自行提取时间",
     prop: "bookDateTime",
     type: "picker-date",
@@ -136,43 +172,21 @@ const formList = [
     rules: [],
   },
   {
-    label: "寄送地址",
+    label: "接收地址",
     prop: "postAddress",
-    type: "textarea",
+    // type: "textarea",
+    type: "location",
     itemProps: {
       placeholder: "点击获取当前位置",
     },
     rules: [],
   },
   {
-    label: "爱宠类型",
-    prop: "type",
-    type: "multiSelector",
-    itemProps: {
-      placeholder: "请选择",
-      required: true,
-    },
-    options: [
-      ["猫", "脊柱动物"],
-      ["英短", "金渐层", "田园猫", "银渐层", "比鲁斯"],
-    ],
-    rules: [],
-  },
-  {
-    label: "爱宠昵称",
-    prop: "petname",
+    label: "门牌号",
+    prop: "address",
     type: "input",
     itemProps: {
-      placeholder: "请输入用户名",
-    },
-    rules: [],
-  },
-  {
-    label: "爱宠体重",
-    prop: "weight",
-    type: "number",
-    itemProps: {
-      placeholder: "请输入用户名",
+      placeholder: "详细地址，例1层101室",
     },
     rules: [],
   },
@@ -187,4 +201,4 @@ const formList = [
   },
 ];
 
-export { formList };
+export { otherFormList, baseInfoFormList };

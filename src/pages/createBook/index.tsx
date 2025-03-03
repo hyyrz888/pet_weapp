@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
-import Taro, { View, Text } from "@tarojs/components";
+import { useEffect, useState, useRef } from "react";
+import Taro, { View, Label, Checkbox, Text } from "@tarojs/components";
 import { useLoad } from "@tarojs/taro";
-import { formList } from "./model";
+import { AtButton } from "taro-ui";
+import { otherFormList, baseInfoFormList } from "./model";
 import AddForm from "@/components/AddForm";
 import { add } from "@/apis/book";
 import { getUser } from "@/apis/user";
@@ -12,14 +13,15 @@ export default () => {
     nickname: "11",
     serviceId: "0",
   });
-  const [fo, setFo] = useState(formList);
+  const baseInfoRef = useRef(null);
+  const otherInfoRef = useRef(null);
   useLoad(() => {
     console.log("Page loaded.");
   });
 
   useEffect(() => {
     // console.log("Page loaded.");
-    console.log(formList);
+    console.log(baseInfoFormList);
     getUser({}).then((res) => {
       console.log("res++++", res);
     });
@@ -27,6 +29,15 @@ export default () => {
 
   const handleSubmit = (val) => {
     console.log("handleSubmit", val);
+    const baseInfo = baseInfoRef.current?.getFormValues() || {};
+    const otherInfo = otherInfoRef.current?.getFormValues() || {};
+
+    const combineInfo = {
+      ...baseInfo,
+      ...otherInfo,
+    };
+    console.log("combineInfo", combineInfo);
+
     add({
       ...val,
       type: "猫",
@@ -43,18 +54,50 @@ export default () => {
   };
 
   const handleRiteChange = (val) => {
-    console.log("handleRiteChange", val);
-    // fo.find((item) => item.prop === "appointDate").hidden = !val;
-    // setFo([...fo]);
+    console.log("handleRiteChangex--------s", val);
+
+    // setFo([...fo]);s
   };
 
   return (
     <View className="page-createBox pt-20">
-      <AddForm formList={fo} formModel={formModel} handleSubmit={handleSubmit}>
-        {{
-          handleRiteChange,
-        }}
-      </AddForm>
+      <View className="formCon">
+        <AddForm
+          ref={baseInfoRef}
+          formList={baseInfoFormList}
+          formModel={formModel}
+        ></AddForm>
+      </View>
+      <View className="formCon">
+        <AddForm
+          ref={otherInfoRef}
+          formList={otherFormList}
+          formModel={formModel}
+        >
+          {{
+            handleRiteChange,
+          }}
+        </AddForm>
+      </View>
+      {/* 协议 */}
+      <View className="flex justify-center mb-30">
+        <Label className="checkboxLabel">
+          <Checkbox
+            className="checkbox"
+            value="1"
+            color="#004ebf"
+            name="agreement"
+            checked={true}
+          />
+          <Text className="txt">用户购买套餐协议</Text>
+        </Label>
+      </View>
+
+      <View className="flex btnList">
+        <AtButton className="flex-1 btn" onClick={handleSubmit} type="primary">
+          下一步
+        </AtButton>
+      </View>
     </View>
   );
 };

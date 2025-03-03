@@ -1,5 +1,5 @@
 import Taro, { getLocation } from "@tarojs/taro";
-import { useEffect, useState } from "react";
+import { useEffect, useImperativeHandle, useState, forwardRef } from "react";
 import {
   Radio,
   RadioGroup,
@@ -8,11 +8,12 @@ import {
   Text,
   Picker,
   Checkbox,
+  Image,
 } from "@tarojs/components";
 import {
   AtForm,
   AtInput,
-  AtButton,
+  AtIcon,
   AtTextarea,
   AtList,
   AtListItem,
@@ -21,8 +22,10 @@ import {
 } from "taro-ui";
 import DateTimePicker from "@/components/DateTimePicker";
 import QQMapWX from "@/utils/qqmap-wx-jssdk.min.js";
+import locationIcon from "../../assets/imgs/location.png";
+import dateIcon from "../../assets/imgs/date-icon.png";
 import "./index.scss";
-export default function AddForm(props) {
+export default forwardRef((props, ref) => {
   const { formList = [], formModel = {}, children, handleSubmit } = props;
 
   const [otherConfig, setOtherConfig] = useState({
@@ -58,13 +61,38 @@ export default function AddForm(props) {
         item.checked = item.value === e.detail.value;
       });
       // children?.handleRiteChange?.(e.detail.value);
-      _formList.find((item) => item.prop === "appointDate").hidden =
-        e.detail.value === "0";
+      if (formItem.prop === "isRite") {
+        _formList.find((item) => item.prop === "riteDateTime").hidden =
+          e.detail.value === "0";
+      } else if (formItem.prop === "legcyWay") {
+        console.log(e.detail.value, "e.detail.value");
+        formData["legcyWayCheck"] = "";
+        _formList.find((item) => item.prop === "legcyWayCheck").hidden =
+          e.detail.value !== "3";
+      }
+
       setFormData({
         ..._formData,
         [formItem.prop]: e.detail.value,
       });
       setFormList([..._formList]);
+    } else if (formItem?.type === "checkbox") {
+      if (formItem.prop === "legcyWayCheck") {
+        _formData[formItem.prop] = e.detail.value;
+        const curObj = _formList.find((item) => item.prop === formItem.prop);
+        console.log(curObj);
+        // curObj?.options.forEach((item) => {
+        //   item.checked = item.value === e.detail.value;
+        // });
+        // // children?.handleRiteChange?.(e.detail.value);
+        // _formList.find((item) => item.prop === "legcyWayCheck").hidden =
+        //   e.detail.value === "0";
+        setFormData({
+          ..._formData,
+          [formItem.prop]: e.detail.value,
+        });
+        setFormList([..._formList]);
+      }
     } else if (formItem?.type === "multiSelector") {
       const selectValues = e.detail.value;
       const getLabel =
@@ -211,7 +239,9 @@ export default function AddForm(props) {
   };
   //提交表单
   const onSubmit = () => {
-    if (!validateForm()) return;
+    console.log("提交表单", formData);
+    if (!validateForm()) return {};
+
     const formValues = Object.keys(formData).reduce((acc, key) => {
       acc[key] = formData[key] || "";
       return acc;
@@ -224,6 +254,14 @@ export default function AddForm(props) {
     console.log(value);
     setFormData(formModel);
   };
+
+  useImperativeHandle(ref, () => ({
+    onReset,
+    onSubmit,
+    getFormValues: () => {
+      return formData;
+    },
+  }));
 
   //初始化数据
   useEffect(() => {
@@ -255,13 +293,13 @@ export default function AddForm(props) {
 
   return (
     <>
-      qqqqq-{JSON.stringify(otherConfig.dtPicker.isOpened)}
+      {/* qqqqq-{JSON.stringify(otherConfig.dtPicker.isOpened)}
       <View>--------</View>
-      formData-{JSON.stringify(formData)}
+      formData-{JSON.stringify(formData)} */}
       <AtForm className="addForm" onSubmit={onSubmit} onReset={onReset}>
         {_formList.map((formItem, index) => (
           <>
-            {["number", "input"].includes(formItem.type) ? (
+            {["digit", "input"].includes(formItem.type) ? (
               <AtInput
                 key={index}
                 name={formItem.prop}
@@ -278,6 +316,7 @@ export default function AddForm(props) {
               <AtInput
                 key={index}
                 name={formItem.prop}
+                type="phone"
                 title={formItem.label}
                 error={formItem?.error || false}
                 placeholder={formItem.itemProps.placeholder}
@@ -288,7 +327,10 @@ export default function AddForm(props) {
               />
             ) : null}
             {formItem.type === "radio" ? (
-              <View className="flex customItem justify-between">
+              <View
+                className="flex customItem items-center justify-between"
+                key={index}
+              >
                 <View className="label">
                   {formItem.itemProps?.required ? (
                     <Text className="error-dot text-color-red">* </Text>
@@ -314,9 +356,26 @@ export default function AddForm(props) {
                 </RadioGroup>
               </View>
             ) : null}
+            {formItem.type === "checkbox" && !formItem.hidden ? (
+              <View
+                className="flex customItem items-center justify-between"
+                key={index}
+              >
+                <Text></Text>
+                {formItem?.options?.map((item, i) => {
+                  return (
+                    <Label className="checkboxItem" for={i}>
+                      <Checkbox value={item.value} checked={item.checked}>
+                        {item.label}
+                      </Checkbox>
+                    </Label>
+                  );
+                })}
+              </View>
+            ) : null}
             {formItem.type === "textarea" ? (
-              <View className="flex customItem">
-                <View className="label">
+              <View className="customItem" key={index}>
+                <View className="label mb-20">
                   {formItem.itemProps?.required ? (
                     <Text className="error-dot text-color-red">* </Text>
                   ) : null}
@@ -333,7 +392,7 @@ export default function AddForm(props) {
               </View>
             ) : null}
             {formItem.type === "picker-date" && !formItem.hidden ? (
-              <View>
+              <View className="relative formItemView" key={index}>
                 {/* <Picker
                 mode={formItem.type.split("-")[1]}
                 onChange={(e) => handleChange(e, formItem)}
@@ -347,7 +406,7 @@ export default function AddForm(props) {
                   />
                 </AtList>
               </Picker> */}
-                <AtList>
+                <AtList className="flex justify-between items-center">
                   <AtListItem
                     onClick={() => handleListClick(formItem)}
                     title={
@@ -364,17 +423,25 @@ export default function AddForm(props) {
                         </Text>
                       </View>
                     }
-                    arrow="right"
                     extraText={
                       formData[formItem.prop] || formItem.itemProps.placeholder
                     }
                   />
+                  <Image
+                    src={dateIcon}
+                    mode="widthFix"
+                    style={{
+                      width: 20,
+                      height: 20,
+                      marginRight: 10,
+                    }}
+                  ></Image>
                 </AtList>
               </View>
             ) : null}
             {formItem.type === "location" ? (
-              <View>
-                <AtList>
+              <View className="formItemView" key={index}>
+                <AtList className="flex justify-between items-center">
                   <AtListItem
                     onClick={() => handleListClick(formItem)}
                     title={
@@ -395,6 +462,15 @@ export default function AddForm(props) {
                       formData[formItem.prop] || formItem.itemProps.placeholder
                     }
                   />
+                  <Image
+                    src={locationIcon}
+                    mode="widthFix"
+                    style={{
+                      width: 20,
+                      height: 20,
+                      marginRight: 10,
+                    }}
+                  ></Image>
                 </AtList>
               </View>
             ) : null}
@@ -404,6 +480,7 @@ export default function AddForm(props) {
                 mode="multiSelector"
                 onChange={(e) => handleChange(e, formItem)}
                 value={formData[formItem.prop]}
+                key={index}
               >
                 <AtList>
                   <AtListItem
@@ -436,8 +513,8 @@ export default function AddForm(props) {
               </Picker>
             ) : null}
             {formItem.type === "tabs" ? (
-              <View className="tabs customItem">
-                <View className="flex">
+              <View className="tabs customItem" key={index}>
+                <View className="flex items-center">
                   <View className="label">
                     {formItem.itemProps?.required ? (
                       <Text className="error-dot text-color-red">* </Text>
@@ -463,28 +540,6 @@ export default function AddForm(props) {
             ) : null}
           </>
         ))}
-
-        {/* 协议 */}
-        <View className="flex justify-center mb-20">
-          <Label className="checkbox">
-            <Checkbox
-              value="1"
-              color="#004ebf"
-              name="agreement"
-              checked={true}
-            />
-            用户购买套餐协议
-          </Label>
-        </View>
-
-        <View className="flex btnList">
-          {/* <AtButton className="flex-1" formType="reset" type="secondary">
-          重置
-        </AtButton> */}
-          <AtButton className="flex-1" formType="submit" type="primary">
-            下一步
-          </AtButton>
-        </View>
       </AtForm>
       {/* 日期时间组件 */}
       <DateTimePicker
@@ -498,4 +553,4 @@ export default function AddForm(props) {
       <AtMessage />
     </>
   );
-}
+});

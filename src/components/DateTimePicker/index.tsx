@@ -48,14 +48,7 @@ export default (props) => {
   }
 
   //2小时间隔
-  const timeRanges = [
-    "9:00-11:00",
-    "11:00-13:00",
-    "13:00-15:00",
-    "15:00-17:00",
-    "17:00-19:00",
-    "19:00-21:00",
-  ];
+  const timeRanges = ["10:00", "12:00", "14:00", "16:00"];
 
   const [data, setData] = useState({
     month: 2,
@@ -94,13 +87,17 @@ export default (props) => {
     console.log(data, props.data.formProp, "--------");
     props?.onConfirm?.({
       formProp: props.data.formProp,
-      value: `${year}-${data.month}-${data.day}`,
+      value: `${year}-${data.month}-${data.day} ${timeRanges[data.value[3]]}`,
     });
     closeSheet();
   };
 
   return (
-    <AtActionSheet isOpened={props.isOpened}>
+    <AtActionSheet
+      isOpened={props.isOpened}
+      onCancel={closeSheet}
+      onClose={closeSheet}
+    >
       <View className="datetimePicker">
         <View className="sheetHeader flex items-center justify-between">
           {/* {year}年{data.month}月{data.day}日 */}
