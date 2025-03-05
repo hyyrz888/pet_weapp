@@ -1,8 +1,8 @@
-import request from "./index";
+import request from './index';
 
 const APIS = {
-  USERINFO: "/mp/user", // 发票
-  LOGIN: "/login/mp",
+  USERINFO: '/mp/user', // 发票
+  LOGIN: '/login/mp',
 };
 
 /**
@@ -11,7 +11,7 @@ const APIS = {
  */
 const getUser = (data) => {
   return request(APIS.USERINFO, {
-    method: "get",
+    method: 'get',
     data,
   });
 };
@@ -22,7 +22,7 @@ const getUser = (data) => {
  */
 const mpLogin = (data) => {
   return request(APIS.LOGIN, {
-    method: "post",
+    method: 'post',
     data,
   });
 };

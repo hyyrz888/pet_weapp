@@ -1,5 +1,7 @@
 .page-additionalService {
   padding: 20px;
+  background-color: #f7f7f9;
+  height: 100%;
   .content {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -7,13 +9,47 @@
     grid-auto-flow: row;
     grid-gap: 30px;
     overflow: hidden;
+    border-radius: 30px;
+    padding: 16px;
+    background-color: #f3f3f1;
   }
   .as-item {
     flex: 1;
     padding: 8px;
     border: 1px solid #e0e0e0;
+    background: #fff;
+    border-radius: 30px;
+    padding: 20px;
+    box-shadow: 0 0 6px 0 rgba(255, 206, 129, 0.39);
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    overflow: hidden;
+    &.selected {
+      position: relative;
+      background: linear-gradient(
+        140deg,
+        rgba(255, 247, 237, 1) 6.34%,
+        rgba(255, 206, 129, 1) 41.25%,
+        rgba(255, 249, 231, 1) 74.04%
+      );
+      border: 1px solid rgba(255, 170, 95, 1);
+      &::after {
+        content: '';
+        display: block;
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        height: 0;
+        border: 0 solid transparent;
+        border-left: 50px solid transparent;
+        border-right: 0px solid transparent;
+        border-bottom: 50px solid #ffce81;
+        border-bottom-right-radius: 16px;
+      }
+    }
     &__image {
-      margin-bottom: 20px;
+      margin-bottom: 12px;
       width: 100%;
       .image {
         width: 100%;
@@ -21,16 +57,52 @@
       }
     }
     &__content {
+      font-size: 0;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
       &-name {
-        font-size: 32px;
-        line-height: 1.5;
-        color: #333;
+        font-size: 26px;
+        color: #154e7b;
+        margin-bottom: 8px;
       }
       &-price {
         font-size: 28px;
         font-weight: 600;
-        color: red;
+        color: #ffaa5f;
       }
+      .goDetail {
+        color: #154e7b;
+        align-self: flex-start;
+        background: linear-gradient(
+          180deg,
+          rgba(193, 233, 238, 1) 80%,
+          rgba(157, 218, 251, 0) 100%
+        );
+        border-radius: 16px;
+        text-align: center;
+        font-size: 24px;
+        display: inline-block;
+        padding: 10px 20px;
+      }
+    }
+  }
+}
+
+.footer {
+  position: fixed;
+  bottom: 40px;
+  left: 40px;
+  right: 40px;
+  .btn {
+    color: #dc7115;
+    background-color: #ffce81;
+    border: none;
+    border-radius: 40px;
+    &:first-child {
+      background-color: #fff;
+      color: #8d8d8d;
     }
   }
 }

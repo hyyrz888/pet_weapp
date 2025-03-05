@@ -1,17 +1,14 @@
 import request from '../index';
 
-
 const APIS = {
-  USERINFO: '/mp/user'
-}
+  USERINFO: '/mp/user',
+};
 
 const getUserInfo = (data) => {
   return request(APIS.USERINFO, {
     method: 'get',
-    data
-  })
-}
+    data,
+  });
+};
 
-export {
-  getUserInfo
-}
+export { getUserInfo };

@@ -1,20 +1,20 @@
-import { View } from "@tarojs/components";
-import Taro, { useLoad } from "@tarojs/taro";
-import { AtAvatar, AtButton } from "taro-ui";
-import { getUserInfo } from "@/apis/mine";
-import "./index.scss";
+import { View } from '@tarojs/components';
+import Taro, { useLoad } from '@tarojs/taro';
+import { AtAvatar, AtButton } from 'taro-ui';
+import { getUserInfo } from '@/apis/mine';
+import './index.scss';
 
 export default function Index() {
   useLoad(() => {
-    console.log("Page loaded.");
+    console.log('Page loaded.');
   });
 
   const handleLogin = () => {
-    console.log("去预约");
+    console.log('去预约');
     // getUserInfo({}).then((res) => {
     //   console.log(res);
     // });
-    Taro.navigateTo({ url: "/pages/createBook/index" });
+    Taro.navigateTo({ url: '/pages/createBook/index' });
   };
 
   return (

@@ -1,8 +1,8 @@
-import request from "./index";
+import request from './index';
 
 const APIS = {
-  LIST: "/mp/bookGood", // 列表
-  DETAIL: "/mp/bookGood/:id", // 详情
+  LIST: '/mp/bookGood', // 列表
+  DETAIL: '/mp/bookGood/:id', // 详情
 };
 // 附加服务
 /**
@@ -11,14 +11,14 @@ const APIS = {
  */
 const list = () => {
   return request(APIS.LIST, {
-    method: "get",
+    method: 'get',
   });
 };
 
 /** 获取详情 */
 const detail = (id) => {
-  return request(APIS.DETAIL.replace(":id", id), {
-    method: "get",
+  return request(APIS.DETAIL.replace(':id', id), {
+    method: 'get',
   });
 };
 

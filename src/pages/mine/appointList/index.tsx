@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
-import { View, Text, Image } from "@tarojs/components";
-import Taro, { useLoad } from "@tarojs/taro";
+import { useState, useEffect } from 'react';
+import { View, Text, Image } from '@tarojs/components';
+import Taro, { useLoad, navigateTo } from '@tarojs/taro';
 import {
   AtAvatar,
   AtListItem,
@@ -10,19 +10,19 @@ import {
   AtActionSheet,
   AtTextarea,
   AtButton,
-} from "taro-ui";
-import { list } from "@/apis/book";
-import sheetCat from "../../../assets/images/sheetCat.png";
-import "./index.scss";
+} from 'taro-ui';
+import { list } from '@/apis/book';
+import sheetCat from '../../../assets/images/sheetCat.png';
+import './index.scss';
 
 const tabList = [
-  { title: "全部" },
-  { title: "已预约" },
-  { title: "待寄送" },
-  { title: "已完成" },
+  { title: '全部' },
+  { title: '已预约' },
+  { title: '待寄送' },
+  { title: '已完成' },
 ];
 
-const textClass = "text-[#f00]";
+const textClass = 'text-[#f00]';
 
 export default function Index() {
   useLoad(() => {
@@ -32,16 +32,17 @@ export default function Index() {
   const [data, setData] = useState([
     {
       appointDate: +new Date(),
-      status: "0",
-      title: "A服务",
+      status: '0',
+      title: 'A服务',
       image: null,
       price: 111,
-      addtion: "附加服务",
+      addtion: '附加服务',
       realPay: 222,
+      id: '112',
     },
   ]);
   const [isOpened, setIsOpened] = useState(false);
-  const [context, setContext] = useState("");
+  const [context, setContext] = useState('');
   const [rateValue, setRate] = useState(5);
   const getlist = async () => {
     const res = await list();
@@ -61,21 +62,21 @@ export default function Index() {
   const getStatusBg = (current) => {
     const obj = {
       0: {
-        label: "已预约",
-        bgClass: "yy",
+        label: '已预约',
+        bgClass: 'yy',
       },
       1: {
-        label: "待寄送",
-        bgClass: "js",
+        label: '待寄送',
+        bgClass: 'js',
       },
       2: {
-        label: "已完成",
-        bgClass: "wc",
+        label: '已完成',
+        bgClass: 'wc',
       },
     };
 
     return (
-      <View className={[obj[current]?.bgClass, "status-bg"].join(" ")}>
+      <View className={[obj[current]?.bgClass, 'status-bg'].join(' ')}>
         <Text className="txt">{obj[current]?.label}</Text>
       </View>
     );
@@ -91,6 +92,13 @@ export default function Index() {
 
   const handleSubmit = () => {
     setIsOpened(false);
+  };
+
+  const handleToDetail = (id: string) => {
+    if (!id) return;
+    navigateTo({
+      url: `./detail/index?id=${id}`,
+    });
   };
 
   useEffect(() => {
@@ -139,7 +147,8 @@ export default function Index() {
                     </View>
                     <View
                       className="btn-item text-[#101010]"
-                      style="background-color:#FFCE81 "
+                      style="background-color:#FFCE81"
+                      onClick={() => handleToDetail(item?.id)}
                     >
                       查看详情
                     </View>
@@ -152,7 +161,7 @@ export default function Index() {
       </AtTabs>
       <AtActionSheet isOpened={isOpened} onClose={() => setIsOpened(false)}>
         <Image
-          className={"sheetImage absolute top-[-50px]"}
+          className={'sheetImage absolute top-[-50px]'}
           mode="widthFix"
           src={sheetCat}
           style={{ width: 100 }}

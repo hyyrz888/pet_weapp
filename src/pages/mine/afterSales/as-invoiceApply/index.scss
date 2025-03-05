@@ -1,0 +1,62 @@
+.page-invoiceApply {
+  padding: 32px;
+  background-color: #f7f7f9;
+  height: 100%;
+  .at-form {
+    background-color: inherit;
+    &::after {
+      border: none;
+    }
+  }
+  .content-simple {
+    font-size: 32px;
+    color: #1c3762;
+  }
+  .at-input {
+    background-color: transparent;
+    padding-left: 0;
+    &__title {
+      color: #101010;
+      font-weight: 600;
+    }
+    &__input {
+      color: #bbb;
+      text-align: right;
+      .weui-input {
+        color: #bbb;
+        text-align: right;
+      }
+    }
+  }
+  .subBtn {
+    margin-top: 100px;
+    color: #dc7115;
+    background-color: #ffce81;
+    border: none;
+  }
+
+  .at-modal {
+    &__container {
+      padding-top: 40px;
+      border-radius: 30px;
+      background: linear-gradient(
+        179.75deg,
+        rgba(157, 218, 251, 1) -13.02%,
+        rgba(255, 255, 255, 1) 9.58%
+      );
+    }
+    &__footer {
+      &::before {
+        border-top: none;
+      }
+    }
+    &__action {
+      padding: 0 60px 40px;
+      * {
+        color: #dc7115 !important;
+        border-radius: 44px !important;
+        background-color: #ffce81 !important;
+      }
+    }
+  }
+}

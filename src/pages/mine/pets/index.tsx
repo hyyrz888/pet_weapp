@@ -1,14 +1,19 @@
-import { useState } from "react";
-import { View, Text } from "@tarojs/components";
-import { useLoad, navigateTo } from "@tarojs/taro";
-import { AtAvatar, AtButton } from "taro-ui";
-import { list } from "@/apis/pet";
-import "./index.scss";
+import { useState } from 'react';
+import { View, Text } from '@tarojs/components';
+import { useLoad, navigateTo } from '@tarojs/taro';
+import { AtAvatar, AtButton } from 'taro-ui';
+import { list } from '@/apis/pet';
+import './index.scss';
 
 export default function Pets() {
-  const [pets, setPets] = useState([]);
+  const [pets, setPets] = useState([
+    {
+      age: '12个月',
+      name: '屁屁',
+    },
+  ]);
   useLoad(() => {
-    console.log("Page loaded.");
+    console.log('Page loaded.');
     list().then((res) => {
       const { data = [] } = res;
       if (data) {
@@ -18,22 +23,24 @@ export default function Pets() {
   });
 
   const handleAddPet = () => {
-    navigateTo({ url: "/pages/mine/pets/add/index" });
+    navigateTo({ url: '/pages/mine/pets/add/index' });
   };
   return (
     <View className="page-pets">
       {pets.map((item, index) => (
         <View className="pet-item" key={index}>
-          <View className="left">
-            <AtAvatar circle></AtAvatar>
-            <Text>屁屁</Text>
+          <AtAvatar className="avatar" circle></AtAvatar>
+          <View className="info flex justify-between">
+            <Text className="name font-bold">{item.name}</Text>
+            <Text className="age">{item.age}</Text>
           </View>
-          <Text>12个月</Text>
         </View>
       ))}
-      <AtButton onClick={handleAddPet} type="primary">
-        添加爱宠
-      </AtButton>
+      <View className="footer">
+        <AtButton className="addBtn" onClick={handleAddPet} type="primary">
+          添加
+        </AtButton>
+      </View>
     </View>
   );
 }

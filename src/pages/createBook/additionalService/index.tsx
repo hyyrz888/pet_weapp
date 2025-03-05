@@ -1,9 +1,9 @@
-import { View, Text, Image } from "@tarojs/components";
-import Taro, { useLoad } from "@tarojs/taro";
-import { AtAvatar, AtButton, AtToast, AtActionSheet } from "taro-ui";
-import { Suspense, useEffect, useState } from "react";
-import { list } from "@/apis/bookGood";
-import "./index.scss";
+import { View, Text, Image } from '@tarojs/components';
+import Taro, { useLoad } from '@tarojs/taro';
+import { AtAvatar, AtButton, AtToast, AtActionSheet } from 'taro-ui';
+import { Suspense, useEffect, useState } from 'react';
+import { list } from '@/apis/bookGood';
+import './index.scss';
 
 interface IDataItem {
   id: string;
@@ -14,23 +14,60 @@ interface IDataItem {
 
 export default function AdditionalService() {
   useLoad(() => {
-    console.log("Page loaded.");
+    console.log('Page loaded.');
   });
-
+  const [selectedIndex, setSelectedIndex] = useState(0);
   const [isOpened, setIsOpened] = useState(false);
   const [selectedItem, setSelectedItem] = useState<IDataItem>();
-  const [data, setData] = useState<IDataItem[]>([]);
+  const [data, setData] = useState<IDataItem[]>([
+    {
+      title: '代存25天服务',
+      image: '',
+      id: '1221',
+      price: '120',
+    },
+    {
+      title: '代存28天服务',
+      image: '',
+      id: '1221',
+      price: '120',
+    },
+    {
+      title: '遗体清洁',
+      image: '',
+      id: '1221',
+      price: '20',
+    },
+    {
+      title: '遗体清洁',
+      image: '',
+      id: '1221',
+      price: '20',
+    },
+    {
+      title: '遗体清洁',
+      image: '',
+      id: '1221',
+      price: '20',
+    },
+    {
+      title: '遗体清洁',
+      image: '',
+      id: '1221',
+      price: '20',
+    },
+  ]);
 
   const handleNextStep = () => {
-    console.log("next step");
-    Taro.navigateTo({ url: "/pages/otherBookService/index" });
+    console.log('next step');
+    Taro.navigateTo({ url: '/pages/otherBookService/index' });
   };
 
   const getData = async () => {
     ///await new Promise((resolve) => setTimeout(resolve, 3000));
     await list().then((res) => {
       const { data = [] } = res;
-      console.log("data", data);
+      console.log('data', data);
       setData(data);
     });
   };
@@ -56,29 +93,43 @@ export default function AdditionalService() {
         <View className="content">
           {data.map((item, index) => (
             <View
-              className="as-item"
+              className={`as-item ${selectedIndex === index ? 'selected' : ''}`}
               key={index}
-              onClick={() => handleShowDetail(item.id)}
+              onClick={() => setSelectedIndex(index)}
             >
               <View className="as-item__image">
                 <Image
                   className="image"
                   mode="widthFix"
-                  style={{ width: "103px" }}
+                  style={{ width: '80px' }}
                   src="https://picsum.photos/300/300"
                 ></Image>
               </View>
               <View className="as-item__content">
-                <Text className="as-item__content-name">{item.title}</Text>
+                <View className="as-item__content-name">{item.title}</View>
+                {selectedIndex === index ? (
+                  <View
+                    onClick={() => handleShowDetail(item.id)}
+                    className="goDetail"
+                  >
+                    查看详情
+                  </View>
+                ) : null}
                 <View className="as-item__content-price">¥{item.price}</View>
               </View>
             </View>
           ))}
         </View>
 
-        <View className="footer mt-40">
-          {/* <AtButton>跳过</AtButton> */}
-          <AtButton type="primary" onClick={handleNextStep}>
+        <View className="footer mt-40 flex gap-4">
+          <AtButton type="secondary" className="btn flex-1">
+            跳过
+          </AtButton>
+          <AtButton
+            type="primary"
+            className="btn flex-1"
+            onClick={handleNextStep}
+          >
             下一步
           </AtButton>
         </View>
@@ -91,7 +142,7 @@ export default function AdditionalService() {
         title={selectedItem?.title}
       >
         <View className="book-content">
-          {selectedItem?.content || "暂无内容"}
+          {selectedItem?.content || '暂无内容'}
         </View>
       </AtActionSheet>
     </Suspense>

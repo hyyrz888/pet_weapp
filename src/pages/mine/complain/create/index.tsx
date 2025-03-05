@@ -1,19 +1,19 @@
-import { View } from "@tarojs/components";
-import { useLoad, showToast } from "@tarojs/taro";
-import { AtTextarea, AtButton } from "taro-ui";
-import "./index.scss";
-import { useState } from "react";
+import { View } from '@tarojs/components';
+import { useLoad, showToast } from '@tarojs/taro';
+import { AtTextarea, AtButton } from 'taro-ui';
+import './index.scss';
+import { useState } from 'react';
 
 export default function Create() {
   useLoad(() => {
-    console.log("Page loaded.");
+    console.log('Page loaded.');
   });
-  const [content, setContent] = useState<string>("");
+  const [content, setContent] = useState<string>('');
   const handleSubmit = () => {
     if (!content.trim())
       return showToast({
-        title: "内容不为空!",
-        icon: "none",
+        title: '内容不为空!',
+        icon: 'none',
       });
     console.log(content);
   };

@@ -1,12 +1,12 @@
-import { useEffect, useState } from "react";
-import { View, PickerView, PickerViewColumn } from "@tarojs/components";
-import { AtButton, AtActionSheet } from "taro-ui";
-import dayjs from "dayjs";
-import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
-import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
+import { useEffect, useState } from 'react';
+import { View, PickerView, PickerViewColumn } from '@tarojs/components';
+import { AtButton, AtActionSheet } from 'taro-ui';
+import dayjs from 'dayjs';
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
-import "./index.scss";
+import './index.scss';
 export default (props) => {
   const date = new Date();
   const year = date.getFullYear();
@@ -32,11 +32,11 @@ export default (props) => {
    */
   function isTimeBetween(time) {
     // 获取当前时间（无日期信息）
-    const current = dayjs(dayjs().format("HH:mm"), "HH:mm"); //转为dayjs对象
-    const [startTime, endTime] = time.split("-");
+    const current = dayjs(dayjs().format('HH:mm'), 'HH:mm'); //转为dayjs对象
+    const [startTime, endTime] = time.split('-');
     // 解析开始时间和结束时间
-    const start = dayjs(startTime, "HH:mm");
-    const end = dayjs(endTime, "HH:mm");
+    const start = dayjs(startTime, 'HH:mm');
+    const end = dayjs(endTime, 'HH:mm');
 
     // 处理跨天时间段（如 22:00 - 02:00）
     if (end.isBefore(start)) {
@@ -48,7 +48,7 @@ export default (props) => {
   }
 
   //2小时间隔
-  const timeRanges = ["10:00", "12:00", "14:00", "16:00"];
+  const timeRanges = ['10:00', '12:00', '14:00', '16:00'];
 
   const [data, setData] = useState({
     month: 2,
@@ -84,7 +84,7 @@ export default (props) => {
   };
 
   const handleConfirm = () => {
-    console.log(data, props.data.formProp, "--------");
+    console.log(data, props.data.formProp, '--------');
     props?.onConfirm?.({
       formProp: props.data.formProp,
       value: `${year}-${data.month}-${data.day} ${timeRanges[data.value[3]]}`,

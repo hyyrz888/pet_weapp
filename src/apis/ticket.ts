@@ -1,9 +1,9 @@
-import request from "./index";
+import request from './index';
 
 const APIS = {
-  LIST: "/mp/ticket", // 发票
-  ADD: "/mp/ticket", // 新增发票
-  DETAIL: "/mp/ticket/:id", // 发票详情
+  LIST: '/mp/ticket', // 发票
+  ADD: '/mp/ticket', // 新增发票
+  DETAIL: '/mp/ticket/:id', // 发票详情
 };
 
 /**
@@ -12,7 +12,7 @@ const APIS = {
  */
 const list = (data) => {
   return request(APIS.LIST, {
-    method: "get",
+    method: 'get',
     data,
   });
 };
@@ -20,15 +20,15 @@ const list = (data) => {
 /** 新增发票 */
 const add = (data) => {
   return request(APIS.ADD, {
-    method: "post",
+    method: 'post',
     data,
   });
 };
 
 /** 获取发票详情 */
 const detail = (id) => {
-  return request(APIS.DETAIL.replace(":id", id), {
-    method: "get",
+  return request(APIS.DETAIL.replace(':id', id), {
+    method: 'get',
   });
 };
 

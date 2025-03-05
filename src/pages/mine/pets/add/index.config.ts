@@ -1,3 +1,3 @@
 export default definePageConfig({
-  navigationBarTitleText: "添加爱宠",
+  navigationBarTitleText: '添加爱宠',
 });

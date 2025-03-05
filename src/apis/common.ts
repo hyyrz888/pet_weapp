@@ -1,26 +1,21 @@
-import request from './index'
+import request from './index';
 
 const APIS = {
   LOGIN: '/login/mp',
-  TEST: '/mp/user'
-}
-
+  TEST: '/mp/user',
+};
 
 const loginApi = (data) => {
   return request(APIS.LOGIN, {
     methods: 'POST',
-    data
-  })
-}
+    data,
+  });
+};
 
 const testApi = () => {
   return request(APIS.TEST, {
-    methods: 'GET'
-  })
-}
+    methods: 'GET',
+  });
+};
 
-
-export {
-  loginApi,
-  testApi
-}
+export { loginApi, testApi };
