@@ -6,6 +6,8 @@ export default defineAppConfig({
     'pages/otherBookService/index',
     'pages/createBook/index',
     'pages/createBook/additionalService/index',
+    'pages/createBook/order/index',
+    'pages/createBook/payResult/index',
     'pages/mine/complain/index',
     'pages/mine/complain/list/index',
     'pages/mine/complain/create/index',

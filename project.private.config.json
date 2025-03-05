@@ -10,6 +10,13 @@
     "miniprogram": {
       "list": [
         {
+          "name": "pages/mine/afterSales/as-invoiceApply/index",
+          "pathName": "pages/mine/afterSales/as-invoiceApply/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
           "name": "pages/mine/complain/create/index",
           "pathName": "pages/mine/complain/create/index",
           "query": "",

@@ -1,8 +1,9 @@
 import { View } from '@tarojs/components';
-import { useLoad, showToast } from '@tarojs/taro';
+import { useLoad, showToast, navigateBack } from '@tarojs/taro';
 import { AtTextarea, AtButton } from 'taro-ui';
 import './index.scss';
 import { useState } from 'react';
+import { add } from '@/apis/advise';
 
 export default function Create() {
   useLoad(() => {
@@ -16,6 +17,18 @@ export default function Create() {
         icon: 'none',
       });
     console.log(content);
+    add({
+      content,
+      type: '',
+    }).then(() => {
+      showToast({
+        title: '提交成功!',
+        icon: 'success',
+        success() {
+          navigateBack();
+        },
+      });
+    });
   };
   return (
     <View className="page-complain-create">

@@ -17,13 +17,14 @@
     padding-left: 0;
     &__title {
       color: #101010;
-      font-weight: 600;
     }
     &__input {
       color: #bbb;
       text-align: right;
+      font-size: 28px !important;
       .weui-input {
         color: #bbb;
+        font-size: 28px !important;
         text-align: right;
       }
     }
@@ -33,6 +34,26 @@
     color: #dc7115;
     background-color: #ffce81;
     border: none;
+  }
+
+  .customItem {
+    padding: 32px;
+    position: relative;
+    border-bottom: 1px solid #ebebeb;
+    .radioItem {
+      zoom: 0.8;
+      &:first-child {
+        margin-right: 32px;
+      }
+    }
+    .label {
+      display: block;
+      margin-right: 32rpx;
+      width: 172rpx;
+      font-size: 32px;
+      line-height: 1.5;
+      color: #333;
+    }
   }
 
   .at-modal {
@@ -53,9 +74,9 @@
     &__action {
       padding: 0 60px 40px;
       * {
-        color: #dc7115 !important;
+        // color: #dc7115 !important;
         border-radius: 44px !important;
-        background-color: #ffce81 !important;
+        // background-color: #ffce81 !important;
       }
     }
   }

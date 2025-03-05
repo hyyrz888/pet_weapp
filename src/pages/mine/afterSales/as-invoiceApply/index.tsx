@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View } from '@tarojs/components';
+import { View, Text, RadioGroup, Label, Radio } from '@tarojs/components';
 import { AtForm, AtInput, AtButton, AtModal } from 'taro-ui';
 import './index.scss';
 
@@ -10,12 +10,16 @@ const textTemplate = {
 };
 export default function AsApplyInvoice() {
   const [formData, setFormData] = useState({
-    amount: '',
+    number: '',
+    type: 'personal',
+    header: '',
+    email: '',
+    price: '',
   });
   const [isOpened, setIsOpened] = useState(false);
   const [status, setStatus] = useState(0);
   const handleSubmit = () => {
-    if (!formData?.amount || !formData?.VIN) {
+    if (!formData?.header || !formData?.number) {
       setStatus(3);
       if (!isOpened) setIsOpened(true);
       return;
@@ -31,6 +35,20 @@ export default function AsApplyInvoice() {
   const handleClose = () => {
     setIsOpened(false);
   };
+  const handleRadioChange = (e) => {
+    const { value } = e.detail;
+    setFormData({
+      ...formData,
+      type: value,
+    });
+  };
+  const handleInputChange = (e, name) => {
+    const { value } = e.detail;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
   return (
     <View className="page-invoiceApply">
       <AtForm onSubmit={handleSubmit} onReset={handleReset}>
@@ -38,37 +56,58 @@ export default function AsApplyInvoice() {
           name="value"
           title="开票金额"
           type="number"
-          required
+          // required
+          disabled
           placeholder="请填写"
-          value={formData.amount}
+          value={formData.price}
         />
-        <AtInput
+        {/* <AtInput
           name="value"
           title="开票类型"
           type="number"
           placeholder="请选择开票类型"
           value={formData.type}
-        />
+        /> */}
+        <View className="flex customItem items-center justify-between">
+          <View className="label">
+            <Text>开票类型</Text>
+          </View>
+          <RadioGroup className="radioGroup" onChange={handleRadioChange}>
+            <Label className="radioItem">
+              <Radio value="personal" checked={formData.type === 'personal'}>
+                个人
+              </Radio>
+            </Label>
+            <Label className="radioItem">
+              <Radio value="company" checked={formData.type === 'company'}>
+                企业
+              </Radio>
+            </Label>
+          </RadioGroup>
+        </View>
         <AtInput
-          name="value"
-          title="开票抬头"
+          name="header"
+          title="发票抬头"
           type="text"
           placeholder="请填写（个人不需）"
-          value={formData.head}
+          value={formData.header}
+          onChange={(e) => handleInputChange(e, 'header')}
         />
         <AtInput
-          name="value"
+          name="number"
           title="企业税号"
-          required
+          // required
           type="text"
+          onChange={(e) => handleInputChange(e, 'number')}
           placeholder="请填写"
-          value={formData.VIN}
+          value={formData.number}
         />
         <AtInput
-          name="value"
+          name="email"
           title="邮箱"
           type="text"
           placeholder="请填写"
+          onChange={(e) => handleInputChange(e, 'email')}
           value={formData.email}
         />
         <AtButton circle type="primary" className="subBtn" formType="submit">

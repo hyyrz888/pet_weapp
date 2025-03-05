@@ -60,7 +60,7 @@ export default function AdditionalService() {
 
   const handleNextStep = () => {
     console.log('next step');
-    Taro.navigateTo({ url: '/pages/otherBookService/index' });
+    Taro.navigateTo({ url: '/pages/createBook/order/index' });
   };
 
   const getData = async () => {

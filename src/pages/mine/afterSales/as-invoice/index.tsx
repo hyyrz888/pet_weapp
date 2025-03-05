@@ -18,6 +18,7 @@ export default function Index() {
   useEffect(() => {
     list({})
       .then((res) => {
+        console.log(res, '发票列表');
         if (res?.data) {
           setData(res.data);
         }
@@ -35,7 +36,7 @@ export default function Index() {
 
   return (
     <View className="page-invoiceList">
-      {data.map((item, index) => (
+      {data?.map((item, index) => (
         <View className="item" onClick={handleClick} key={index}>
           <View className="flex title justify-between items-center">
             <Text>{item.title}</Text>
