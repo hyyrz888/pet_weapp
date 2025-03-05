@@ -1,4 +1,4 @@
-import { View, Text, Image } from '@tarojs/components';
+import { View, Text } from '@tarojs/components';
 import Taro, { useLoad } from '@tarojs/taro';
 import { AtAvatar, AtListItem, AtList } from 'taro-ui';
 import { menuList } from './config';
