@@ -1,15 +1,15 @@
-import { defineConfig, type UserConfigExport } from "@tarojs/cli";
-const path = require("path");
-import devConfig from "./dev";
-import prodConfig from "./prod";
-import WindiCSS from "vite-plugin-windicss";
-import MiniProgramTailwind from "@dcasia/mini-program-tailwind-webpack-plugin/rollup";
+import { defineConfig, type UserConfigExport } from '@tarojs/cli';
+const path = require('path');
+import devConfig from './dev';
+import prodConfig from './prod';
+import WindiCSS from 'vite-plugin-windicss';
+import MiniProgramTailwind from '@dcasia/mini-program-tailwind-webpack-plugin/rollup';
 
 // https://taro-docs.jd.com/docs/next/config#defineconfig-辅助函数
-export default defineConfig<"vite">(async (merge, { command, mode }) => {
-  const baseConfig: UserConfigExport<"vite"> = {
-    projectName: "miniapp",
-    date: "2025-2-7",
+export default defineConfig<'vite'>(async (merge, { command, mode }) => {
+  const baseConfig: UserConfigExport<'vite'> = {
+    projectName: 'miniapp',
+    date: '2025-2-7',
     designWidth: 750,
     deviceRatio: {
       640: 2.34 / 2,
@@ -17,23 +17,23 @@ export default defineConfig<"vite">(async (merge, { command, mode }) => {
       375: 2,
       828: 1.81 / 2,
     },
-    sourceRoot: "src",
-    outputRoot: "dist",
+    sourceRoot: 'src',
+    outputRoot: 'dist',
     defineConstants: {},
     copy: {
       patterns: [],
       options: {},
     },
-    framework: "react",
+    framework: 'react',
     prefixer: false,
     compiler: {
-      type: "vite",
+      type: 'vite',
       vitePlugins: [
         WindiCSS({
           config: {
             extract: {
               // 忽略部分文件夹
-              exclude: ["node_modules", ".git", "dist"],
+              exclude: ['node_modules', '.git', 'dist'],
             },
             corePlugins: {
               // 禁用掉在小程序环境中不可能用到的 plugins
@@ -41,8 +41,8 @@ export default defineConfig<"vite">(async (merge, { command, mode }) => {
             },
           },
           scan: {
-            dirs: ["."], // 扫描项目根目录
-            fileExtensions: ["vue", "tsx", "jsx"], // 支持的文件类型
+            dirs: ['.'], // 扫描项目根目录
+            fileExtensions: ['vue', 'tsx', 'jsx'], // 支持的文件类型
           },
         }),
         MiniProgramTailwind({
@@ -52,9 +52,10 @@ export default defineConfig<"vite">(async (merge, { command, mode }) => {
     },
     plugins: [],
     alias: {
-      "@/apis": path.resolve(__dirname, "..", "src/apis"),
-      "@/components": path.resolve(__dirname, "..", "src/components"),
-      "@/utils": path.resolve(__dirname, "..", "src/utils"),
+      '@/apis': path.resolve(__dirname, '..', 'src/apis'),
+      '@/components': path.resolve(__dirname, '..', 'src/components'),
+      '@/constants': path.resolve(__dirname, '..', 'src/constants'),
+      '@/utils': path.resolve(__dirname, '..', 'src/utils'),
     },
     mini: {
       postcss: {
@@ -65,8 +66,8 @@ export default defineConfig<"vite">(async (merge, { command, mode }) => {
         cssModules: {
           enable: false, // 默认为 false，如需使用 css modules 功能，则设为 true
           config: {
-            namingPattern: "module", // 转换模式，取值为 global/module
-            generateScopedName: "[name]__[local]___[hash:base64:5]",
+            namingPattern: 'module', // 转换模式，取值为 global/module
+            generateScopedName: '[name]__[local]___[hash:base64:5]',
           },
         },
         url: {
@@ -81,29 +82,29 @@ export default defineConfig<"vite">(async (merge, { command, mode }) => {
       },
     },
     h5: {
-      publicPath: "/",
-      staticDirectory: "static",
-      esnextModules: ["taro-ui"],
+      publicPath: '/',
+      staticDirectory: 'static',
+      esnextModules: ['taro-ui'],
       miniCssExtractPluginOption: {
         ignoreOrder: true,
-        filename: "css/[name].[hash].css",
-        chunkFilename: "css/[name].[chunkhash].css",
+        filename: 'css/[name].[hash].css',
+        chunkFilename: 'css/[name].[chunkhash].css',
       },
       postcss: {
         pxtransform: {
           enable: true,
           config: {
-            propList: ["*"],
+            propList: ['*'],
           },
         },
         tailwind: {
           //没用上
           enable: false,
           config: {
-            content: ["./src/**/*.{html,js,ts,jsx,tsx,vue}"],
+            content: ['./src/**/*.{html,js,ts,jsx,tsx,vue}'],
             extract: {
-              include: ["src/**/*.{vue,html,jsx,tsx}"],
-              exclude: ["node_modules", ".git"],
+              include: ['src/**/*.{vue,html,jsx,tsx}'],
+              exclude: ['node_modules', '.git'],
             },
           },
         },
@@ -114,14 +115,14 @@ export default defineConfig<"vite">(async (merge, { command, mode }) => {
         cssModules: {
           enable: false, // 默认为 false，如需使用 css modules 功能，则设为 true
           config: {
-            namingPattern: "module", // 转换模式，取值为 global/module
-            generateScopedName: "[name]__[local]___[hash:base64:5]",
+            namingPattern: 'module', // 转换模式，取值为 global/module
+            generateScopedName: '[name]__[local]___[hash:base64:5]',
           },
         },
       },
     },
     rn: {
-      appName: "taroDemo",
+      appName: 'taroDemo',
       postcss: {
         cssModules: {
           enable: false, // 默认为 false，如需使用 css modules 功能，则设为 true
@@ -130,7 +131,7 @@ export default defineConfig<"vite">(async (merge, { command, mode }) => {
     },
   };
 
-  if (process.env.NODE_ENV === "development") {
+  if (process.env.NODE_ENV === 'development') {
     // 本地开发构建配置（不混淆压缩）
     return merge({}, baseConfig, devConfig);
   }

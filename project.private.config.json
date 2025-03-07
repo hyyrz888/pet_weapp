@@ -10,6 +10,13 @@
     "miniprogram": {
       "list": [
         {
+          "name": "pages/mine/pets/add/index",
+          "pathName": "pages/mine/pets/add/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
           "name": "pages/mine/afterSales/as-invoiceApply/index",
           "pathName": "pages/mine/afterSales/as-invoiceApply/index",
           "query": "",

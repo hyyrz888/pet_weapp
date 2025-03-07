@@ -1,9 +1,24 @@
 import { useState } from 'react';
-import { View } from '@tarojs/components';
-import { useLoad } from '@tarojs/taro';
-import { AtInput, AtButton } from 'taro-ui';
+import { View, Image, Picker, Text } from '@tarojs/components';
+import { useLoad, showToast, uploadFile } from '@tarojs/taro';
+import {
+  AtInput,
+  AtButton,
+  AtImagePicker,
+  AtModal,
+  AtListItem,
+  AtList,
+} from 'taro-ui';
 import { add } from '@/apis/pet';
+import petBg from '../../../../assets/images/bg.png';
+import { baseUrl } from '@/apis';
+import { PET_TYPES } from '@/constants';
 import './index.scss';
+
+interface IFileItem {
+  url: string;
+  [key: string]: string;
+}
 
 export default function Add() {
   useLoad(() => {
@@ -13,11 +28,16 @@ export default function Add() {
   const [formData, setFormData] = useState({
     nickname: '',
     type: '',
+    subType: '',
+    petType: '',
     weight: '',
     age: '',
     image: '',
-    subType: 'xxx',
+    statu: 1, //0死亡 1活着
   });
+
+  const [files, setFiles] = useState<IFileItem[]>([]);
+  const [isOpened, setIsOpened] = useState(false);
 
   const handleAdd = () => {
     add(formData).then((res) => {
@@ -34,9 +54,9 @@ export default function Add() {
     },
     {
       title: '宠物类型',
-      key: 'type',
-      type: 'text',
-      placeholder: '请输入',
+      key: 'petType',
+      type: 'multiSelector',
+      placeholder: '请选择爱宠类型',
     },
     {
       title: '体重',
@@ -50,42 +70,139 @@ export default function Add() {
       type: 'number',
       placeholder: '请输入',
     },
-    {
-      title: '宠物照片',
-      key: 'image',
-      type: 'upload',
-      editable: false,
-      placeholder: '请上传',
-    },
+    // {
+    //   title: '宠物照片',
+    //   key: 'image',
+    //   type: 'upload',
+    //   editable: false,
+    //   placeholder: '请上传',
+    // },
   ];
 
   const handleChange = (value: any, key: string) => {
     console.log(value, key);
+    if (key === 'petType') {
+      const type = PET_TYPES[0][value.detail.value[0]];
+      const subType = PET_TYPES[1][value.detail.value[1]];
+      setFormData({
+        ...formData,
+        petType: `${type}/${subType}`,
+        type,
+        subType,
+      });
+      return;
+    }
     setFormData({
       ...formData,
       [key]: value,
     });
   };
+  const handleUpload = (_files: IFileItem[], type: string) => {
+    console.log(files);
+    if (type === 'remove') return setFiles([]);
+    if (files.length == 1)
+      return showToast({ title: '最多上传一张照片', icon: 'none' });
+    // console.log(file);
+    uploadFile({
+      url: `${baseUrl}/file`,
+      name: 'file',
+      filePath: _files[0].url,
+      success: (res) => {
+        if (res?.statusCode == 200) {
+          const { data = {} } = res?.data ? JSON.parse(res.data) : {};
+          console.log(data);
+          setFiles([
+            {
+              url: baseUrl + '/' + data?.path,
+              name: 'petThumb',
+            },
+          ]);
+        }
+      },
+      fail: () => {
+        setFiles([
+          {
+            url: _files[0].url,
+            name: 'petThumb',
+          },
+        ]);
+      },
+    });
+  };
+  const handleImageClick = () => {
+    setIsOpened(true);
+  };
+
   return (
-    <View className="add">
-      {formConfig.map((item) => (
-        <AtInput
-          name={item.key}
-          title={item.title}
-          type="text"
-          placeholder={item.type !== 'upload' ? item.placeholder : ''}
-          editable={item.editable}
-          value={formData[item.key]}
-          placeholderStyle="text-align:right"
-          onChange={(e) => handleChange(e, item.key)}
-          onClick={() => console.log('click')}
-        />
-      ))}
-      <View className="pl-20 pr-20 mt-30">
-        <AtButton type="primary" onClick={handleAdd}>
-          添加
-        </AtButton>
+    <View className="page-petAdd">
+      <Image
+        src={petBg}
+        mode="widthFix"
+        style={{
+          width: '100%',
+        }}
+      ></Image>
+      <View className="form-box">
+        {formConfig.map((item, index) =>
+          item.type !== 'multiSelector' ? (
+            <AtInput
+              name={item.key}
+              title={item.title}
+              type={item.type}
+              placeholder={item.placeholder}
+              value={formData[item.key]}
+              onChange={(e) => handleChange(e, item.key)}
+              onClick={() => console.log('click')}
+            />
+          ) : (
+            <Picker
+              range={PET_TYPES}
+              mode="multiSelector"
+              onChange={(e) => handleChange(e, item.key)}
+              value={formData[item.key]}
+              key={index}
+            >
+              <AtInput
+                name={item.key}
+                title={item.title}
+                placeholder={item.placeholder}
+                value={formData[item.key]}
+                // editable={false}
+              />
+            </Picker>
+          )
+        )}
+        <View className="label">爱宠照片</View>
+        <AtImagePicker
+          count={1}
+          multiple={false}
+          length={2}
+          mode="scaleToFill"
+          files={files}
+          onImageClick={handleImageClick}
+          onChange={handleUpload}
+        ></AtImagePicker>
+
+        <View className="pl-20 pr-20 btn-box">
+          <AtButton type="primary" className="btn" onClick={handleAdd}>
+            添加
+          </AtButton>
+        </View>
       </View>
+
+      <AtModal
+        isOpened={isOpened}
+        confirmText="关闭"
+        onClose={() => setIsOpened(false)}
+      >
+        <Image
+          src={files[0]?.url}
+          mode="widthFix"
+          style={{
+            width: '100%',
+          }}
+        ></Image>
+      </AtModal>
     </View>
   );
 }

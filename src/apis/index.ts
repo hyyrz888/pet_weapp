@@ -1,5 +1,5 @@
 import Taro, { getStorageSync } from '@tarojs/taro';
-const baseUrl = process.env.TARO_APP_API;
+export const baseUrl = process.env.TARO_APP_API;
 export default function (url: string, options: any = {}) {
   return new Promise<any>((resolve, reject) => {
     const token = getStorageSync('token') || '';
