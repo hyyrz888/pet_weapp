@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
-import { View, Text } from '@tarojs/components';
-import { useLoad, getUserInfo, login, setStorageSync } from '@tarojs/taro';
-import { AtAvatar, AtListItem, AtList } from 'taro-ui';
-import { mpLogin } from '@/apis/user';
+import { View, Text, Picker, Image } from '@tarojs/components';
+import { useLoad, navigateBack, getStorageSync } from '@tarojs/taro';
+import { AtAvatar, AtListItem, AtList, AtButton, AtInput } from 'taro-ui';
+import { GENDER } from '@/constants';
+
+import editIcon from '../../../assets/imgs/edit.png';
 import './index.scss';
 
 export default function Profile() {
@@ -12,39 +14,103 @@ export default function Profile() {
 
   const [userInfo, setUserInfo] = useState<any>({
     avatarUrl: '',
-    gender: null,
+    name: '',
+    phone: '',
+    gender: '',
   });
 
-  const handleGetUserInfo = () => {
-    login({
-      success: (res) => {
-        if (res.code) {
-          mpLogin({
-            code: res.code,
-          }).then(async (res) => {
-            if (res.code === 200) setStorageSync('token', res.data);
-            console.log(res, '====');
-            const { userInfo } = await getUserInfo();
-            console.log(userInfo);
-            if (userInfo) {
-              setUserInfo({
-                avatarUrl: userInfo.avatarUrl,
-                gender: userInfo.gender,
-                nickName: userInfo.nickName,
-              });
-              setStorageSync('userInfo', userInfo);
-            }
-          });
-        }
-      },
+  const handleCancel = () => {
+    navigateBack();
+  };
+  const handleSave = () => {};
+
+  const handleChange = (val, key) => {
+    if (key === 'gender') {
+      setUserInfo({
+        ...userInfo,
+        [key]: GENDER[val.detail.value],
+      });
+      return;
+    }
+    setUserInfo({
+      ...userInfo,
+      [key]: val,
     });
   };
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    const avatarUrl = getStorageSync('avatarUrl');
+    if (avatarUrl) {
+      setUserInfo({
+        ...userInfo,
+        avatarUrl,
+      });
+    }
+  }, []);
 
   return (
     <View className="page-profile">
-      <View className="header mt-30 mb-30" onClick={handleGetUserInfo}>
+      <View className="form-box">
+        <View className="header">
+          <AtAvatar
+            image={userInfo.avatarUrl}
+            circle
+            className="avatar"
+            openData={{ type: 'userAvatarUrl' }}
+            size="large"
+          />
+          <View className="edit-box">
+            <Image src={editIcon} mode="widthFix" className="edit-icon"></Image>
+          </View>
+        </View>
+        <View className="header-title">家长姓名</View>
+        <AtInput
+          name="name"
+          title="名字"
+          type="text"
+          placeholder="请输入您的名字"
+          value={userInfo['name']}
+          onChange={(e) => handleChange(e, 'name')}
+          onClick={() => console.log('click')}
+        />
+        <AtInput
+          name="phone"
+          title="联系电话"
+          type="phone"
+          placeholder="请输入电话号码"
+          value={userInfo['phone']}
+          onChange={(e) => handleChange(e, 'phone')}
+        />
+
+        <Picker
+          range={GENDER}
+          mode="selector"
+          onChange={(e) => handleChange(e, 'gender')}
+          value={userInfo['gender']}
+        >
+          <AtInput
+            name="gender"
+            title="性别"
+            placeholder="请选择您的性别"
+            value={userInfo['gender']}
+          />
+        </Picker>
+
+        <View className="pl-20 pr-20 btn-box">
+          <AtButton
+            type="primary"
+            className="cancel btn"
+            onClick={handleCancel}
+          >
+            取消
+          </AtButton>
+          <AtButton type="primary" className="btn" onClick={handleSave}>
+            保存
+          </AtButton>
+        </View>
+      </View>
+
+      {/* <View className="header mt-30 mb-30" onClick={handleGetUserInfo}>
         <AtAvatar
           image={userInfo.avatarUrl || 'https://img.yzcdn.cn/vant/cat.jpeg'}
           circle
@@ -61,7 +127,7 @@ export default function Profile() {
             extraText={userInfo.gender === 1 ? '男' : '女'}
           ></AtListItem>
         </AtList>
-      )}
+      )} */}
     </View>
   );
 }

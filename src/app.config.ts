@@ -3,7 +3,6 @@ export default defineAppConfig({
     'pages/index/index',
     'pages/shop/index',
     'pages/mine/index',
-    'pages/otherBookService/index',
     'pages/createBook/index',
     'pages/createBook/additionalService/index',
     'pages/createBook/order/index',
@@ -27,21 +26,25 @@ export default defineAppConfig({
       {
         pagePath: 'pages/shop/index',
         text: '商城',
-        // iconPath: 'static/images/home.png',
-        // selectedIconPath: 'static/images/home-selected.png'
+        iconPath: 'assets/icon/shop.png',
+        selectedIconPath: 'assets/icon/shop.png',
       },
       {
         pagePath: 'pages/index/index',
         text: '它念',
+        iconPath: 'assets/icon/home.png',
+        selectedIconPath: 'assets/icon/home_active.png',
       },
       {
         pagePath: 'pages/mine/index',
         text: '个人中心',
+        iconPath: 'assets/icon/mine.png',
+        selectedIconPath: 'assets/icon/mine_active.png',
       },
     ],
 
-    color: '#000',
-    selectedColor: '#72C8F6',
+    color: '#d8d8d8',
+    selectedColor: '#1C3762',
   },
   window: {
     backgroundTextStyle: 'light', // 下拉loading的样式，仅支持 dark / light

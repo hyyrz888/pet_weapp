@@ -5,8 +5,8 @@
   "appid": "wx8b9f51d49e3a7a55",
   "setting": {
     "urlCheck": true,
-    "es6": false,
-    "enhance": false,
+    "es6": true,
+    "enhance": true,
     "compileHotReLoad": false,
     "postcss": false,
     "minified": true,
@@ -15,8 +15,9 @@
       "disablePlugins": [],
       "outputPath": ""
     },
-    "condition": true,
-    "minifyWXML": true
+    "condition": false,
+    "minifyWXML": true,
+    "swc": true
   },
   "compileType": "miniprogram",
   "libVersion": "3.7.7",

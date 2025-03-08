@@ -1,6 +1,6 @@
 .page-appointList {
   background-color: #f1f1f1;
-  height: 100%;
+  min-height: 100%;
 }
 .tab-content {
   padding: 40px;
@@ -13,6 +13,7 @@
     font-size: 24px;
     padding: 20px 20px 80px;
     border-radius: 20px;
+    margin-bottom: 20px;
     overflow: hidden;
     &-head {
       padding-bottom: 20px;
@@ -34,10 +35,13 @@
           background-image: url('../../../assets/imgs/yyy.png');
         }
         &.js {
-          background-image: url('../../../assets/imgs/js.png');
+          background-image: url('../../../assets/imgs/djs.png');
         }
         &.wc {
-          background-image: url('../../../assets/imgs/wc.png');
+          background-image: url('../../../assets/imgs/ywc.png');
+        }
+        &.qx {
+          background-image: url('../../../assets/imgs/qx.png');
         }
         .txt {
           position: relative;
@@ -53,6 +57,10 @@
         margin-left: 16px;
         .title {
           font-size: 32px;
+          .text-price {
+            margin-left: 20px;
+            font-size: 24px;
+          }
         }
       }
     }

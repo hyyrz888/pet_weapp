@@ -16,6 +16,13 @@ const getUser = (data) => {
   });
 };
 
+const putUser = (data) => {
+  return request(APIS.USERINFO, {
+    method: 'put',
+    data,
+  });
+};
+
 /**
  * @name login
  * @description 获取用户信息
@@ -27,4 +34,4 @@ const mpLogin = (data) => {
   });
 };
 
-export { getUser, mpLogin };
+export { getUser, mpLogin, putUser };

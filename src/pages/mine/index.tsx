@@ -1,10 +1,21 @@
 import { View, Text } from '@tarojs/components';
-import Taro, { useLoad } from '@tarojs/taro';
+import Taro, {
+  useLoad,
+  getUserInfo,
+  login,
+  setStorageSync,
+} from '@tarojs/taro';
 import { AtAvatar, AtListItem, AtList } from 'taro-ui';
 import { menuList } from './config';
+import { mpLogin } from '@/apis/user';
+import { useEffect, useState } from 'react';
 import './index.scss';
 
 export default function Index() {
+  const [userInfo, setUserInfo] = useState<any>({
+    avatarUrl: '',
+    nickName: '',
+  });
   useLoad(() => {
     console.log('Page loaded.');
   });
@@ -17,17 +28,45 @@ export default function Index() {
     }
   };
 
+  const handleGetUserInfo = () => {
+    login({
+      success: (res) => {
+        if (res.code) {
+          mpLogin({
+            code: res.code,
+          }).then(async (res) => {
+            if (res.code === 200) setStorageSync('token', res.data);
+            console.log(res, '====');
+            const { userInfo } = await getUserInfo();
+            console.log(userInfo);
+            if (userInfo) {
+              setUserInfo({
+                avatarUrl: userInfo.avatarUrl,
+                nickName: userInfo.nickName,
+              });
+              setStorageSync('userInfo', userInfo);
+            }
+          });
+        }
+      },
+    });
+  };
+
+  useEffect(() => {
+    handleGetUserInfo();
+  });
+
   return (
     <View className="page-mine">
       <View className="content">
         <View className="header">
           <AtAvatar
-            image="https://img.yzcdn.cn/vant/cat.jpeg"
+            openData={{ type: 'userAvatarUrl' }}
             circle
             className="avatar"
             size="large"
           />
-          <Text className="nickname">我的昵称</Text>
+          <Text className="nickname">{userInfo.nickName}</Text>
         </View>
         <View className="toolsList">
           <AtList>

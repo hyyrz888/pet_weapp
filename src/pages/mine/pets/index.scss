@@ -1,5 +1,5 @@
 .page-pets {
-  padding: 32px 32px 0 120px;
+  padding: 64px 32px 0 120px;
   background-color: #154e7b;
   height: 100%;
   .pet-item {
@@ -8,6 +8,7 @@
     padding: 32px 32px 32px 100px;
     margin-bottom: 32px;
     height: 140px;
+    line-height: 140px;
     position: relative;
     .avatar {
       position: absolute;

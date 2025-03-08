@@ -20,6 +20,7 @@ const tabList = [
   { title: '已预约' },
   { title: '待寄送' },
   { title: '已完成' },
+  { title: '已取消' },
 ];
 
 const textClass = 'text-[#f00]';
@@ -32,7 +33,37 @@ export default function Index() {
   const [data, setData] = useState([
     {
       appointDate: +new Date(),
-      status: '0',
+      status: 1,
+      title: 'A服务',
+      image: null,
+      price: 111,
+      addtion: '附加服务',
+      realPay: 222,
+      id: '112',
+    },
+    {
+      appointDate: +new Date(),
+      status: 2,
+      title: 'A服务',
+      image: null,
+      price: 111,
+      addtion: '附加服务',
+      realPay: 222,
+      id: '112',
+    },
+    {
+      appointDate: +new Date(),
+      status: 3,
+      title: 'A服务',
+      image: null,
+      price: 111,
+      addtion: '附加服务',
+      realPay: 222,
+      id: '112',
+    },
+    {
+      appointDate: +new Date(),
+      status: 4,
       title: 'A服务',
       image: null,
       price: 111,
@@ -50,9 +81,16 @@ export default function Index() {
       setData(res);
     }
   };
-
+  const _deepData = [...Object.freeze(data)];
   const handleTabClick = (value) => {
+    console.log(_deepData);
     setCurrent(value);
+    getData(value);
+  };
+
+  const getData = (val) => {
+    if (val === 0) return data;
+    return data.filter((item) => item.status === val);
   };
 
   const handleChange = (value) => {
@@ -61,17 +99,21 @@ export default function Index() {
 
   const getStatusBg = (current) => {
     const obj = {
-      0: {
+      1: {
         label: '已预约',
         bgClass: 'yy',
       },
-      1: {
+      2: {
         label: '待寄送',
         bgClass: 'js',
       },
-      2: {
+      3: {
         label: '已完成',
         bgClass: 'wc',
+      },
+      4: {
+        label: '已取消',
+        bgClass: 'qx',
       },
     };
 
@@ -82,7 +124,7 @@ export default function Index() {
     );
   };
 
-  const handleClick = () => {
+  const handleEvalClick = () => {
     setIsOpened(true);
   };
 
@@ -92,6 +134,17 @@ export default function Index() {
 
   const handleSubmit = () => {
     setIsOpened(false);
+  };
+  const handleToInvoice = () => {
+    navigateTo({
+      url: `/pages/mine/afterSales/as-invoiceApply/index`,
+    });
+  };
+
+  const handleCreateBook = () => {
+    navigateTo({
+      url: `/pages/createBook/index`,
+    });
   };
 
   const handleToDetail = (id: string) => {
@@ -111,12 +164,8 @@ export default function Index() {
         {tabList.map((_, index) => (
           <AtTabsPane current={current} index={index}>
             <View className="tab-content">
-              {data?.map((item, index) => (
-                <View
-                  className="item relative  bg-red-700"
-                  key={index}
-                  onClick={handleClick}
-                >
+              {getData(current)?.map((item, index) => (
+                <View className="item relative  bg-red-700" key={index}>
                   <View className="item-head items-center">
                     <View className="text-888">
                       预约日期：{item.appointDate}
@@ -129,7 +178,10 @@ export default function Index() {
                       image="https://img.yzcdn.cn/vant/cat.jpeg"
                     ></AtAvatar>
                     <View className="ml-20 item-body-right">
-                      <View className="title">{item.title}</View>
+                      <View className="title">
+                        {item.title}
+                        <Text className="text-price">¥232</Text>
+                      </View>
                       <View className="info">
                         附加服务：<Text className="text-888">2322</Text>
                       </View>
@@ -139,12 +191,42 @@ export default function Index() {
                     </View>
                   </View>
                   <View className="item-foot absolute bottom-0 left-0 right-0">
-                    <View className="btn-item" style="background-color:#C1E9EE">
-                      取消预约
-                    </View>
-                    <View className="btn-item" style="background-color:#ffc7c7">
-                      发票申请
-                    </View>
+                    {[1, 2].includes(item.status) && (
+                      <View
+                        className="btn-item"
+                        style="background-color:#C1E9EE"
+                      >
+                        取消预约
+                      </View>
+                    )}
+
+                    {[3].includes(item.status) && (
+                      <>
+                        <View
+                          className="btn-item"
+                          style="background-color:#C1E9EE"
+                          onClick={handleEvalClick}
+                        >
+                          评价
+                        </View>
+                        <View
+                          className="btn-item"
+                          style="background-color:#ffc7c7"
+                          onClick={() => handleToInvoice(item?.id)}
+                        >
+                          发票申请
+                        </View>
+                      </>
+                    )}
+                    {[4].includes(item.status) && (
+                      <View
+                        className="btn-item"
+                        style="background-color:#C1E9EE"
+                        onClick={handleCreateBook}
+                      >
+                        重新预约
+                      </View>
+                    )}
                     <View
                       className="btn-item text-[#101010]"
                       style="background-color:#FFCE81"

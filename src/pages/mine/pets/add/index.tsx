@@ -33,6 +33,7 @@ export default function Add() {
     weight: '',
     age: '',
     image: '',
+    id:'', //图片id
     statu: 1, //0死亡 1活着
   });
 
@@ -111,6 +112,10 @@ export default function Add() {
         if (res?.statusCode == 200) {
           const { data = {} } = res?.data ? JSON.parse(res.data) : {};
           console.log(data);
+          setFormData({
+            ...formData,
+            id: data?.id,
+          })
           setFiles([
             {
               url: baseUrl + '/' + data?.path,

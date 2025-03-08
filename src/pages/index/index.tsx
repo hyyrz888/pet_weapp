@@ -21,15 +21,15 @@ export default function Index() {
     <View className="index pt-20">
       <View className="flex justify-center">
         <AtAvatar
-          image="https://img.yzcdn.cn/vant/cat.jpeg"
+          openData={{ type: 'userAvatarUrl' }}
           circle
           className="avatar"
           size="large"
         />
       </View>
-      <View className="btnBox pl-20 pr-20 mt-40">
-        <AtButton type="primary" circle onClick={handleLogin}>
-          去预约
+      <View className="pl-20 pr-20 mt-40">
+        <AtButton className="btnBox" circle onClick={handleLogin}>
+          马上预约
         </AtButton>
       </View>
     </View>
