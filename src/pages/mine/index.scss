@@ -5,8 +5,12 @@
   height: 100%;
   .content {
     position: relative;
-    padding-top: 100px;
-    background-color: #fff;
+    padding-top: 60px;
+    background: linear-gradient(
+      181.3deg,
+      rgba(157, 218, 251, 1) -11.23%,
+      rgba(255, 255, 255, 1) 10.3%
+    );
     height: 100%;
     border-top-left-radius: 40px;
     border-top-right-radius: 40px;
@@ -14,11 +18,12 @@
   .header {
     position: absolute;
     left: 50%;
-    transform: translate(-50%, -80%);
+    transform: translate(-50%, -70%);
     z-index: 999;
     display: flex;
     align-items: center;
     flex-direction: column;
+    height: 224px;
     .avatar {
       border: 2px solid #fff;
       width: 160px;
@@ -31,10 +36,16 @@
     }
   }
   .toolsList {
-    margin-top: 100px;
+    margin-top: 80px;
+    padding: 0 20px;
     .item-content__info-title {
       font-size: 28px;
       font-weight: 600;
+    }
+  }
+  .at-list {
+    &::after {
+      border: 0;
     }
   }
 }

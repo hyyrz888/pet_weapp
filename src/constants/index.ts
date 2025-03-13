@@ -13,4 +13,15 @@ const PET_TYPES = [
 
 const GENDER = ['男', '女'];
 
-export { ORDER_STATUS, PET_TYPES, GENDER };
+const TICKET_TYPE = [
+  {
+    label: '个人',
+    value: '1',
+  },
+  {
+    label: '企业',
+    value: '2',
+  },
+];
+
+export { ORDER_STATUS, PET_TYPES, GENDER, TICKET_TYPE };

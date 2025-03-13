@@ -5,12 +5,14 @@
   .item {
     background: linear-gradient(
       179.97deg,
-      rgba(157, 218, 251, 0.36) -89.32%,
+      rgba(157, 218, 251, 1) -89.32%,
       rgba(255, 255, 255, 1) 46.69%
     );
     padding: 20px 24px;
     margin-bottom: 20px;
     font-size: 24px;
+    border-radius: 20px;
+    position: relative;
     &-head {
       margin-bottom: 20px;
       display: flex;

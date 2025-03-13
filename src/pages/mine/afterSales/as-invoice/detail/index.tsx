@@ -2,6 +2,7 @@ import { View } from '@tarojs/components';
 import { useState } from 'react';
 import { AtInput } from 'taro-ui';
 import './index.scss';
+import { useLoad } from '@tarojs/taro';
 
 export default () => {
   const [formData, setFormData] = useState({
@@ -9,6 +10,9 @@ export default () => {
     head: '23',
     VIN: '23',
     email: '23',
+  });
+  useLoad((option) => {
+    console.log('Page loaded.', option);
   });
   return (
     <View className="page-invoice-detail">

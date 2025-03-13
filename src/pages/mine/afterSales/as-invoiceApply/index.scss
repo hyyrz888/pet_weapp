@@ -34,6 +34,9 @@
     color: #dc7115;
     background-color: #ffce81;
     border: none;
+    font-size: 32px;
+    height: 88px;
+    line-height: 88px;
   }
 
   .customItem {
@@ -73,10 +76,13 @@
     }
     &__action {
       padding: 0 60px 40px;
-      * {
-        // color: #dc7115 !important;
+      button {
+        background-color: #ffce81 !important;
+        color: #dc7115 !important;
         border-radius: 44px !important;
-        // background-color: #ffce81 !important;
+        height: auto !important;
+        line-height: 100% !important;
+        padding: 20px 0;
       }
     }
   }

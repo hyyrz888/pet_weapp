@@ -1,10 +1,17 @@
 import { useEffect, useState } from 'react';
 import { View, Text, Picker, Image } from '@tarojs/components';
-import { useLoad, navigateBack, getStorageSync } from '@tarojs/taro';
+import {
+  useLoad,
+  navigateBack,
+  getStorageSync,
+  setStorageSync,
+  showToast,
+} from '@tarojs/taro';
 import { AtAvatar, AtListItem, AtList, AtButton, AtInput } from 'taro-ui';
 import { GENDER } from '@/constants';
 
 import editIcon from '../../../assets/imgs/edit.png';
+import { putUser } from '@/apis/user';
 import './index.scss';
 
 export default function Profile() {
@@ -12,9 +19,9 @@ export default function Profile() {
     console.log('Page loaded.');
   });
 
-  const [userInfo, setUserInfo] = useState<any>({
-    avatarUrl: '',
-    name: '',
+  const [formData, setFormData] = useState<any>({
+    avatar: '',
+    username: '',
     phone: '',
     gender: '',
   });
@@ -22,28 +29,57 @@ export default function Profile() {
   const handleCancel = () => {
     navigateBack();
   };
-  const handleSave = () => {};
+  const handleSave = () => {
+    putUser(formData).then((res) => {
+      console.log(res);
+      if (res?.code === 200) {
+        // 保存成功
+        const _storage = getStorageSync('userInfo');
+        setStorageSync('userInfo', {
+          ..._storage,
+          ...{
+            ...formData,
+            nickname: formData.nickname,
+            gender: GENDER.findIndex((item) => item === formData.gender),
+          },
+        });
+        setFormData({
+          ..._storage,
+          ...formData,
+        });
+        showToast({
+          title: '保存成功',
+          icon: 'none',
+          duration: 2000,
+        });
+      }
+    });
+  };
 
   const handleChange = (val, key) => {
     if (key === 'gender') {
-      setUserInfo({
-        ...userInfo,
+      setFormData({
+        ...formData,
         [key]: GENDER[val.detail.value],
       });
       return;
     }
-    setUserInfo({
-      ...userInfo,
+    setFormData({
+      ...formData,
       [key]: val,
     });
   };
 
   useEffect(() => {
-    const avatarUrl = getStorageSync('avatarUrl');
-    if (avatarUrl) {
-      setUserInfo({
-        ...userInfo,
-        avatarUrl,
+    const userInfo = getStorageSync('userInfo');
+    console.log(userInfo);
+    if (userInfo) {
+      setFormData({
+        ...formData,
+        username: userInfo.username,
+        phone: userInfo.phone,
+        avatar: userInfo.avatar,
+        gender: GENDER[userInfo.gender],
       });
     }
   }, []);
@@ -53,7 +89,7 @@ export default function Profile() {
       <View className="form-box">
         <View className="header">
           <AtAvatar
-            image={userInfo.avatarUrl}
+            image={formData.avatarUrl}
             circle
             className="avatar"
             openData={{ type: 'userAvatarUrl' }}
@@ -65,12 +101,12 @@ export default function Profile() {
         </View>
         <View className="header-title">家长姓名</View>
         <AtInput
-          name="name"
+          name="username"
           title="名字"
           type="text"
           placeholder="请输入您的名字"
-          value={userInfo['name']}
-          onChange={(e) => handleChange(e, 'name')}
+          value={formData['username']}
+          onChange={(e) => handleChange(e, 'username')}
           onClick={() => console.log('click')}
         />
         <AtInput
@@ -78,7 +114,7 @@ export default function Profile() {
           title="联系电话"
           type="phone"
           placeholder="请输入电话号码"
-          value={userInfo['phone']}
+          value={formData['phone']}
           onChange={(e) => handleChange(e, 'phone')}
         />
 
@@ -86,13 +122,13 @@ export default function Profile() {
           range={GENDER}
           mode="selector"
           onChange={(e) => handleChange(e, 'gender')}
-          value={userInfo['gender']}
+          value={formData['gender']}
         >
           <AtInput
             name="gender"
             title="性别"
             placeholder="请选择您的性别"
-            value={userInfo['gender']}
+            value={formData['gender']}
           />
         </Picker>
 

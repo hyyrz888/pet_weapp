@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { View, Label, Checkbox, Text, CheckboxGroup } from '@tarojs/components';
-import { useLoad, showToast } from '@tarojs/taro';
+import { useLoad, showToast, navigateTo } from '@tarojs/taro';
 import { AtButton } from 'taro-ui';
 import { otherFormList, baseInfoFormList } from './model';
 import AddForm from '@/components/AddForm';
@@ -63,10 +63,24 @@ export default () => {
       bookDateTime: new Date(combineInfo.bookDateTime),
       riteDateTime: new Date(combineInfo.riteDateTime),
       // bookDateTime: new Date(),
-      // expressDateTime: new Date(),
+      expressDateTime: new Date(combineInfo.expressDateTime),
       totalAmount: 1000, //10元
     }).then((res) => {
       console.log('res', res);
+      if (res.code === 200) {
+        const data = res;
+        showToast({
+          title: '预约单创建成功',
+          icon: 'none',
+          success() {
+            setTimeout(() => {
+              navigateTo({
+                url: './additionalService/index?id=' + data.id,
+              });
+            });
+          },
+        });
+      }
     });
   };
 

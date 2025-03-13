@@ -13,12 +13,15 @@ interface IDataItem {
 }
 
 export default function AdditionalService() {
-  useLoad(() => {
-    console.log('Page loaded.');
+  useLoad((option) => {
+    if (option?.id) {
+      setId(option.id);
+    }
   });
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [isOpened, setIsOpened] = useState(false);
   const [selectedItem, setSelectedItem] = useState<IDataItem>();
+  const [id, setId] = useState('');
   const [data, setData] = useState<IDataItem[]>([
     {
       title: '代存25天服务',
@@ -60,7 +63,7 @@ export default function AdditionalService() {
 
   const handleNextStep = () => {
     console.log('next step');
-    Taro.navigateTo({ url: '/pages/createBook/order/index' });
+    Taro.navigateTo({ url: `../order/index?id=${id}` });
   };
 
   const getData = async () => {

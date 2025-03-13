@@ -1,14 +1,13 @@
 .page-pets {
-  padding: 64px 32px 0 120px;
+  padding: 64px 40px 64px 120px;
   background-color: #154e7b;
-  height: 100%;
+  min-height: 100%;
   .pet-item {
     background-color: #fff;
     border-radius: 16px;
     padding: 32px 32px 32px 100px;
     margin-bottom: 32px;
     height: 140px;
-    line-height: 140px;
     position: relative;
     .avatar {
       position: absolute;
@@ -21,20 +20,21 @@
     }
     .info {
       align-items: center;
+      height: 100%;
       .name {
         color: #154e7b;
       }
       .age {
         font-size: 28px;
+        color: #00000040;
       }
     }
   }
   .footer {
-    position: fixed;
-    bottom: 160px;
-    left: 0;
-    right: 0;
-    padding: 0 40px;
+    padding-top: 40px;
+    width: 670px;
+    position: relative;
+    margin-left: -80px;
   }
   .addBtn {
     // inset: 0;

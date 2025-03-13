@@ -1,14 +1,7 @@
 import { useState } from 'react';
-import { View, Image, Picker, Text } from '@tarojs/components';
-import { useLoad, showToast, uploadFile } from '@tarojs/taro';
-import {
-  AtInput,
-  AtButton,
-  AtImagePicker,
-  AtModal,
-  AtListItem,
-  AtList,
-} from 'taro-ui';
+import { View, Image, Picker } from '@tarojs/components';
+import { useLoad, showToast, uploadFile, navigateBack } from '@tarojs/taro';
+import { AtInput, AtButton, AtImagePicker, AtModal } from 'taro-ui';
 import { add } from '@/apis/pet';
 import petBg from '../../../../assets/images/bg.png';
 import { baseUrl } from '@/apis';
@@ -21,19 +14,14 @@ interface IFileItem {
 }
 
 export default function Add() {
-  useLoad(() => {
-    console.log('Page loaded.');
-  });
-
   const [formData, setFormData] = useState({
-    nickname: '',
+    petname: '',
     type: '',
     subType: '',
     petType: '',
     weight: '',
     age: '',
-    image: '',
-    id:'', //图片id
+    imageIds: [],
     statu: 1, //0死亡 1活着
   });
 
@@ -41,15 +29,30 @@ export default function Add() {
   const [isOpened, setIsOpened] = useState(false);
 
   const handleAdd = () => {
-    add(formData).then((res) => {
-      console.log(res);
+    add({
+      ...formData,
+      petType: undefined,
+      weight: Number(formData.weight),
+    }).then((res) => {
+      if (res.code === 200) {
+        showToast({
+          title: '添加成功',
+          icon: 'none',
+          duration: 2000,
+          success: () => {},
+        }).then(() => {
+          setTimeout(() => {
+            navigateBack();
+          });
+        });
+      }
     });
   };
 
   const formConfig = [
     {
       title: '爱宠昵称',
-      key: 'nickname',
+      key: 'petname',
       type: 'text',
       placeholder: '请输入',
     },
@@ -81,7 +84,6 @@ export default function Add() {
   ];
 
   const handleChange = (value: any, key: string) => {
-    console.log(value, key);
     if (key === 'petType') {
       const type = PET_TYPES[0][value.detail.value[0]];
       const subType = PET_TYPES[1][value.detail.value[1]];
@@ -114,8 +116,8 @@ export default function Add() {
           console.log(data);
           setFormData({
             ...formData,
-            id: data?.id,
-          })
+            imageIds: [data?.id],
+          });
           setFiles([
             {
               url: baseUrl + '/' + data?.path,

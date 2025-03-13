@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { View, Text } from '@tarojs/components';
-import { useLoad, navigateTo } from '@tarojs/taro';
+import { navigateTo, useDidShow } from '@tarojs/taro';
 import { AtAvatar, AtButton } from 'taro-ui';
 import { list } from '@/apis/pet';
 import './index.scss';
@@ -8,20 +8,22 @@ import './index.scss';
 export default function Pets() {
   const [pets, setPets] = useState([
     {
-      age: '12个月',
-      name: '屁屁',
+      age: '',
+      petname: '',
     },
   ]);
-  useLoad(() => {
-    console.log('Page loaded.');
+  useDidShow(() => {
+    getlist();
+  });
+
+  const getlist = () => {
     list().then((res) => {
       const { data = [] } = res;
       if (data) {
         setPets(data);
       }
     });
-  });
-
+  };
   const handleAddPet = () => {
     navigateTo({ url: '/pages/mine/pets/add/index' });
   };
@@ -31,7 +33,7 @@ export default function Pets() {
         <View className="pet-item" key={index}>
           <AtAvatar className="avatar" circle></AtAvatar>
           <View className="info flex justify-between">
-            <Text className="name font-bold">{item.name}</Text>
+            <Text className="name font-bold">{item.petname}</Text>
             <Text className="age">{item.age}</Text>
           </View>
         </View>

@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { View, Text, RadioGroup, Label, Radio } from '@tarojs/components';
 import { AtForm, AtInput, AtButton, AtModal } from 'taro-ui';
+import { TICKET_TYPE } from '@/constants';
+import { add } from '@/apis/ticket';
+import { useLoad, navigateBack } from '@tarojs/taro';
 import './index.scss';
 
 const textTemplate = {
@@ -9,31 +12,54 @@ const textTemplate = {
   3: '请先核对您的开票信息是否填写正确，后台工作人员将会跟进您的申请，请耐心等待~',
 };
 export default function AsApplyInvoice() {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    price: string | number;
+    number: string | number;
+    type: string;
+    header: string;
+    email: string;
+    bookId: string;
+  }>({
     number: '',
-    type: 'personal',
+    bookId: '',
+    type: '1',
     header: '',
     email: '',
     price: '',
   });
   const [isOpened, setIsOpened] = useState(false);
   const [status, setStatus] = useState(0);
+
+  useLoad((option) => {
+    console.log(option);
+    const { payAmount, id } = option;
+    setFormData({
+      ...formData,
+      bookId: id,
+      price: Number(payAmount) / 100,
+    });
+  });
+
   const handleSubmit = () => {
-    if (!formData?.header || !formData?.number) {
-      setStatus(3);
-      if (!isOpened) setIsOpened(true);
-      return;
-    }
+    add({
+      ...formData,
+      type: Number(formData.type),
+    }).then((res) => {
+      console.log(res);
+      if (res.code === 200) {
+        setStatus(1);
+        if (!isOpened) setIsOpened(true);
+      }
+    });
 
     console.log(formData);
   };
-  const handleReset = () => {
-    setFormData({
-      ...formData,
-    });
-  };
   const handleClose = () => {
     setIsOpened(false);
+  };
+  const handleConfirm = () => {
+    setIsOpened(false);
+    navigateBack();
   };
   const handleRadioChange = (e) => {
     const { value } = e.detail;
@@ -42,8 +68,9 @@ export default function AsApplyInvoice() {
       type: value,
     });
   };
-  const handleInputChange = (e, name) => {
-    const { value } = e.detail;
+  const handleInputChange = (value, name) => {
+    console.log(value, name);
+
     setFormData({
       ...formData,
       [name]: value,
@@ -51,11 +78,11 @@ export default function AsApplyInvoice() {
   };
   return (
     <View className="page-invoiceApply">
-      <AtForm onSubmit={handleSubmit} onReset={handleReset}>
+      <AtForm>
         <AtInput
           name="value"
           title="开票金额"
-          type="number"
+          type="text"
           // required
           disabled
           placeholder="请填写"
@@ -73,35 +100,39 @@ export default function AsApplyInvoice() {
             <Text>开票类型</Text>
           </View>
           <RadioGroup className="radioGroup" onChange={handleRadioChange}>
-            <Label className="radioItem">
-              <Radio value="personal" checked={formData.type === 'personal'}>
-                个人
-              </Radio>
-            </Label>
-            <Label className="radioItem">
-              <Radio value="company" checked={formData.type === 'company'}>
-                企业
-              </Radio>
-            </Label>
+            {TICKET_TYPE?.map((item, index) => (
+              <Label className="radioItem" key={index}>
+                <Radio
+                  value={item.value}
+                  checked={formData.type === item.value}
+                >
+                  {item.label}
+                </Radio>
+              </Label>
+            ))}
           </RadioGroup>
         </View>
-        <AtInput
-          name="header"
-          title="发票抬头"
-          type="text"
-          placeholder="请填写（个人不需）"
-          value={formData.header}
-          onChange={(e) => handleInputChange(e, 'header')}
-        />
-        <AtInput
-          name="number"
-          title="企业税号"
-          // required
-          type="text"
-          onChange={(e) => handleInputChange(e, 'number')}
-          placeholder="请填写"
-          value={formData.number}
-        />
+        {formData.type === '2' && (
+          <AtInput
+            name="header"
+            title="发票抬头"
+            type="text"
+            placeholder="请填写（个人不需）"
+            value={formData.header}
+            onChange={(e) => handleInputChange(e, 'header')}
+          />
+        )}
+        {formData.type === '2' && (
+          <AtInput
+            name="number"
+            title="企业税号"
+            // required
+            type="text"
+            onChange={(e) => handleInputChange(e, 'number')}
+            placeholder="请填写"
+            value={formData.number}
+          />
+        )}
         <AtInput
           name="email"
           title="邮箱"
@@ -110,7 +141,12 @@ export default function AsApplyInvoice() {
           onChange={(e) => handleInputChange(e, 'email')}
           value={formData.email}
         />
-        <AtButton circle type="primary" className="subBtn" formType="submit">
+        <AtButton
+          circle
+          type="primary"
+          className="subBtn"
+          onClick={handleSubmit}
+        >
           提交
         </AtButton>
       </AtForm>
@@ -118,6 +154,7 @@ export default function AsApplyInvoice() {
         isOpened={isOpened}
         cancelText="我已知晓"
         onClose={handleClose}
+        onConfirm={handleConfirm}
         onCancel={handleClose}
         content={textTemplate[status]}
       />

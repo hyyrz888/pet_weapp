@@ -19,7 +19,7 @@ export default function Create() {
     console.log(content);
     add({
       content,
-      type: '',
+      type: 2,
     }).then(() => {
       showToast({
         title: '提交成功!',

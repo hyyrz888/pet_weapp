@@ -9,10 +9,9 @@ const APIS = {
  * @name getUser
  * @description 获取用户信息
  */
-const getUser = (data) => {
+const getUser = () => {
   return request(APIS.USERINFO, {
     method: 'get',
-    data,
   });
 };
 

@@ -2,45 +2,43 @@ import { useState } from 'react';
 import { View, Text } from '@tarojs/components';
 import { useLoad } from '@tarojs/taro';
 import { AtAvatar, AtListItem, AtList } from 'taro-ui';
+import { detail } from '@/apis/book';
+import dayjs from 'dayjs';
 import './index.scss';
 // 预约详情
 export default function Index() {
   const rowsData = [
     {
       label: '基础服务',
-      key: 'a',
+      key: 'menu',
     },
     {
       label: '下单时间',
-      key: 'a',
+      key: 'bookDateTime',
     },
     {
       label: '联系人',
-      key: 'a',
+      key: 'username',
     },
     {
       label: '联系电话',
-      key: 'a',
+      key: 'phone',
     },
     {
       label: '爱宠名字',
-      key: 'a',
+      key: 'petname',
     },
     {
       label: '预约时间',
-      key: 'a',
+      key: 'expressDateTime',
     },
     {
       label: '接收地址',
-      key: 'a',
-    },
-    {
-      label: '详细地址',
-      key: 'a',
+      key: 'local',
     },
     {
       label: '门牌号',
-      key: 'a',
+      key: 'xx',
     },
     {
       label: '附加服务',
@@ -52,25 +50,39 @@ export default function Index() {
     },
   ];
 
-  useLoad(() => {
-    console.log('Page loaded.');
-  });
-
-  const [info, setInfo] = useState({
-    a: +new Date(),
-    b: '0',
-    c: 'A服务',
-    d: null,
-    e: 111,
-    f: '附加服务',
-    g: 222,
+  const [info, setInfo] = useState({});
+  const [statuName, setStatuName] = useState('');
+  useLoad((option) => {
+    console.log('Page loaded.', option);
+    if (option?.id) {
+      setStatuName(option?.statuName);
+      detail(option.id).then((res) => {
+        if (res.code === 200) {
+          const result = res.data;
+          if (!result) return;
+          setInfo({
+            ...result,
+            local: `${result.address.province} ${result?.address?.city}`,
+            petname: result.pet?.petname,
+            bookDateTime: dayjs(result.bookDateTime).format(
+              'YYYY-MM-DD HH:mm:ss'
+            ),
+            expressDateTime: dayjs(result.expressDateTime).format(
+              'YYYY-MM-DD HH:mm:ss'
+            ),
+            pet: undefined,
+            address: undefined,
+          });
+        }
+      });
+    }
   });
 
   return (
     <View className="page-appointDetail">
       <View className="header text-center">
         <AtAvatar circle className="mx-auto"></AtAvatar>
-        <View>23</View>
+        <View>{statuName}</View>
       </View>
       <View className="body">
         <AtList>
@@ -80,19 +92,20 @@ export default function Index() {
                 key={index}
                 className="detail-item"
                 title={item.label}
-                extraText={info[item.key] || ''}
+                extraText={info[item.key] || '-'}
               ></AtListItem>
-              {['additional', 'mark'].includes(item.key) ? (
+              {['bookGoods'].includes(item.key) ? (
                 <View className="subInfo">
-                  <View className="sub-item">1</View>
-                  <View className="sub-item">2</View>
+                  {info(item.key).map(() => {
+                    return <View className="sub-item">1</View>;
+                  })}
                 </View>
               ) : null}
             </>
           ))}
         </AtList>
         <View className="footer text-right">
-          <Text className="text-price">总金额: ¥23223</Text>
+          <Text className="text-price">总金额: ¥{info.payAmount}</Text>
         </View>
       </View>
     </View>

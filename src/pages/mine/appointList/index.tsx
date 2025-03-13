@@ -1,9 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { View, Text, Image } from '@tarojs/components';
-import Taro, { useLoad, navigateTo } from '@tarojs/taro';
+import { navigateTo, useDidShow } from '@tarojs/taro';
 import {
   AtAvatar,
-  AtListItem,
   AtRate,
   AtTabs,
   AtTabsPane,
@@ -13,110 +12,77 @@ import {
 } from 'taro-ui';
 import { list } from '@/apis/book';
 import sheetCat from '../../../assets/images/sheetCat.png';
+import dayjs from 'dayjs';
 import './index.scss';
 
 const tabList = [
   { title: '全部' },
+  { title: '待付款' },
   { title: '已预约' },
   { title: '待寄送' },
   { title: '已完成' },
   { title: '已取消' },
 ];
-
+const obj = {
+  0: {
+    label: '待付款',
+    bgClass: 'js',
+  },
+  1: {
+    label: '已预约',
+    bgClass: 'yy',
+  },
+  2: {
+    label: '待寄送',
+    bgClass: 'js',
+  },
+  3: {
+    label: '已完成',
+    bgClass: 'wc',
+  },
+  4: {
+    label: '已取消',
+    bgClass: 'qx',
+  },
+};
 const textClass = 'text-[#f00]';
 
 export default function Index() {
-  useLoad(() => {
-    // console.log("Page loaded.", sheetCat);
+  useDidShow(() => {
+    getlist();
   });
   const [current, setCurrent] = useState(0);
-  const [data, setData] = useState([
-    {
-      appointDate: +new Date(),
-      status: 1,
-      title: 'A服务',
-      image: null,
-      price: 111,
-      addtion: '附加服务',
-      realPay: 222,
-      id: '112',
-    },
-    {
-      appointDate: +new Date(),
-      status: 2,
-      title: 'A服务',
-      image: null,
-      price: 111,
-      addtion: '附加服务',
-      realPay: 222,
-      id: '112',
-    },
-    {
-      appointDate: +new Date(),
-      status: 3,
-      title: 'A服务',
-      image: null,
-      price: 111,
-      addtion: '附加服务',
-      realPay: 222,
-      id: '112',
-    },
-    {
-      appointDate: +new Date(),
-      status: 4,
-      title: 'A服务',
-      image: null,
-      price: 111,
-      addtion: '附加服务',
-      realPay: 222,
-      id: '112',
-    },
-  ]);
+  const [data, setData] = useState([]);
   const [isOpened, setIsOpened] = useState(false);
   const [context, setContext] = useState('');
   const [rateValue, setRate] = useState(5);
   const getlist = async () => {
     const res = await list();
     if (res.code === 200) {
-      setData(res);
+      const result = res.data.map((item) => ({
+        ...item,
+        bookDateTime: dayjs(item.bookDateTime).format('YYYY-MM-DD HH:mm:ss'),
+      }));
+      console.log(result);
+      setData(result);
     }
   };
-  const _deepData = [...Object.freeze(data)];
   const handleTabClick = (value) => {
-    console.log(_deepData);
     setCurrent(value);
     getData(value);
   };
 
   const getData = (val) => {
-    if (val === 0) return data;
-    return data.filter((item) => item.status === val);
+    if (val === -1) return data;
+    console.log(val);
+    return data.filter((item) => item?.statu === val) || [];
   };
 
   const handleChange = (value) => {
     setContext(value);
   };
-
+  // 待付款  已预约  待寄送  已完成  已取消
   const getStatusBg = (current) => {
-    const obj = {
-      1: {
-        label: '已预约',
-        bgClass: 'yy',
-      },
-      2: {
-        label: '待寄送',
-        bgClass: 'js',
-      },
-      3: {
-        label: '已完成',
-        bgClass: 'wc',
-      },
-      4: {
-        label: '已取消',
-        bgClass: 'qx',
-      },
-    };
-
     return (
       <View className={[obj[current]?.bgClass, 'status-bg'].join(' ')}>
         <Text className="txt">{obj[current]?.label}</Text>
@@ -147,16 +113,12 @@ export default function Index() {
     });
   };
 
-  const handleToDetail = (id: string) => {
-    if (!id) return;
+  const handleToDetail = (item) => {
+    if (!item?.id) return;
     navigateTo({
-      url: `./detail/index?id=${id}`,
+      url: `./detail/index?id=${item.id}statuName=${obj[item.statu]?.label}`,
     });
   };
-
-  useEffect(() => {
-    getlist();
-  }, []);
 
   return (
     <View className="page-appointList">
@@ -164,13 +126,13 @@ export default function Index() {
         {tabList.map((_, index) => (
           <AtTabsPane current={current} index={index}>
             <View className="tab-content">
-              {getData(current)?.map((item, index) => (
+              {getData(current - 1).map((item, index) => (
                 <View className="item relative  bg-red-700" key={index}>
                   <View className="item-head items-center">
                     <View className="text-888">
-                      预约日期：{item.appointDate}
+                      预约日期：{item.bookDateTime}
                     </View>
-                    {getStatusBg(item.status)}
+                    {getStatusBg(item.statu)}
                   </View>
                   <View className="item-body">
                     <AtAvatar
@@ -179,19 +141,20 @@ export default function Index() {
                     ></AtAvatar>
                     <View className="ml-20 item-body-right">
                       <View className="title">
-                        {item.title}
-                        <Text className="text-price">¥232</Text>
+                        {item.menu}
+                        <Text className="text-price">¥{item.payAmount}</Text>
                       </View>
                       <View className="info">
-                        附加服务：<Text className="text-888">2322</Text>
+                        附加服务：<Text className="text-888">服务内容</Text>
                       </View>
                       <View>
-                        实际支付：<Text className="text-price">¥2323</Text>
+                        实际支付：
+                        <Text className="text-price">¥{item.totalAmount}</Text>
                       </View>
                     </View>
                   </View>
                   <View className="item-foot absolute bottom-0 left-0 right-0">
-                    {[1, 2].includes(item.status) && (
+                    {[1, 2].includes(item.statu) && (
                       <View
                         className="btn-item"
                         style="background-color:#C1E9EE"
@@ -200,7 +163,7 @@ export default function Index() {
                       </View>
                     )}
 
-                    {[3].includes(item.status) && (
+                    {[3].includes(item.statu) && (
                       <>
                         <View
                           className="btn-item"
@@ -218,7 +181,7 @@ export default function Index() {
                         </View>
                       </>
                     )}
-                    {[4].includes(item.status) && (
+                    {[4].includes(item.statu) && (
                       <View
                         className="btn-item"
                         style="background-color:#C1E9EE"
@@ -230,13 +193,16 @@ export default function Index() {
                     <View
                       className="btn-item text-[#101010]"
                       style="background-color:#FFCE81"
-                      onClick={() => handleToDetail(item?.id)}
+                      onClick={() => handleToDetail(item)}
                     >
                       查看详情
                     </View>
                   </View>
                 </View>
               ))}
+              {!getData(current - 1)?.length && (
+                <View className="text-center">暂无数据</View>
+              )}
             </View>
           </AtTabsPane>
         ))}

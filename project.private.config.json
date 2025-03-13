@@ -10,6 +10,13 @@
     "miniprogram": {
       "list": [
         {
+          "name": "pages/createBook/order/index",
+          "pathName": "pages/createBook/order/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
           "name": "pages/mine/pets/add/index",
           "pathName": "pages/mine/pets/add/index",
           "query": "",
@@ -89,5 +96,5 @@
       ]
     }
   },
-  "libVersion": "3.7.9"
+  "libVersion": "3.7.11"
 }

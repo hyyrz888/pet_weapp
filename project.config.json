@@ -15,9 +15,9 @@
       "disablePlugins": [],
       "outputPath": ""
     },
-    "condition": false,
+    "condition": true,
     "minifyWXML": true,
-    "swc": true
+    "swc": false
   },
   "compileType": "miniprogram",
   "libVersion": "3.7.7",
