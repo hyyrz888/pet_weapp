@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { View, Text } from '@tarojs/components';
-import { useLoad, navigateTo, request } from '@tarojs/taro';
+import { useLoad, navigateTo } from '@tarojs/taro';
 import { list } from '@/apis/advise';
 import './index.scss';
+import dayjs from 'dayjs';
 
 export default function List() {
   useLoad(() => {
@@ -10,8 +11,11 @@ export default function List() {
   });
 
   const [data, setData] = useState([]);
-
-  const getStatusBg = (current) => {
+  const formatDay = (day: string) => {
+    if (!day) return '';
+    return dayjs(day).format('YYYY-MM-DD HH:mm:ss');
+  };
+  const getStatusBg = (item) => {
     const obj = {
       0: {
         label: '处理中',
@@ -22,10 +26,10 @@ export default function List() {
         bgClass: 'wc',
       },
     };
-
+    const statu = item.replayContent ? 1 : 0;
     return (
-      <View className={[obj[current]?.bgClass, 'status-bg'].join(' ')}>
-        <Text className="txt">{obj[current]?.label}</Text>
+      <View className={[obj[statu]?.bgClass, 'status-bg'].join(' ')}>
+        <Text className="txt">{obj[statu]?.label}</Text>
       </View>
     );
   };
@@ -33,23 +37,12 @@ export default function List() {
   useEffect(() => {
     console.log('getApi loaded.');
 
-    list()
-      .then((res) => {
-        console.log(res);
-        if (res?.data) {
-          setData(res.data);
-        }
-      })
-      .finally(() => {
-        setData([
-          {
-            id: 1,
-            appointDate: +new Date(),
-            status: '1',
-            title: 'A服务',
-          },
-        ]);
-      });
+    list().then((res) => {
+      console.log(res);
+      if (res?.data) {
+        setData(res.data);
+      }
+    });
   }, []);
 
   return (
@@ -57,17 +50,18 @@ export default function List() {
       {data.map((item, index) => (
         <View
           className="item"
+          key={index}
           onClick={() =>
             navigateTo({
-              url: `/pages/mine/complain/list/detail/index?id=${item.id}`,
+              url: `./detail/index?id=${item.id}`,
             })
           }
         >
           <View className="item-head items-center">
-            <View className="text-888">预：{item.appointDate}</View>
-            {getStatusBg(item.status)}
+            <View className="text-888">预：{formatDay(item.createdAt)}</View>
+            {getStatusBg(item)}
           </View>
-          <View className="content">我是岁数大发电房</View>
+          <View className="content">{item.content}</View>
           <View className="bottom">点击查看</View>
         </View>
       ))}

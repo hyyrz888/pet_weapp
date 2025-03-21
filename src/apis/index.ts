@@ -1,4 +1,4 @@
-import Taro, { getStorageSync } from '@tarojs/taro';
+import Taro, { clearStorageSync, getStorageSync } from '@tarojs/taro';
 import { showToast } from '@tarojs/taro';
 export const baseUrl = process.env.TARO_APP_API;
 export default function (url: string, options: any = {}) {
@@ -11,16 +11,30 @@ export default function (url: string, options: any = {}) {
       data: options.data || {},
       header: {
         'content-type': 'application/json',
-        id: userInfo?.id || '019542b2-a0c5-74d2-b492-2798667070d9',
+        id: userInfo?.id || '',
         // token,
       },
       success: (res) => {
-        console.log(res);
+        console.log(res, '----');
         const data = res.data;
         if (data?.code === 400) {
           showToast({
             title: data.message?.name ?? '网络错误',
             icon: 'none',
+          });
+          return;
+        } else if (data?.code === 401) {
+          clearStorageSync();
+          showToast({
+            title: '登录过期',
+            icon: 'none',
+            success: () => {
+              setTimeout(() => {
+                Taro.reLaunch({
+                  url: '/pages/index/index',
+                });
+              }, 1000);
+            },
           });
           return;
         }
@@ -31,8 +45,11 @@ export default function (url: string, options: any = {}) {
         showToast({
           title: '网络错误',
           icon: 'none',
+          success: () => {
+            clearStorageSync();
+            reject(err);
+          },
         });
-        reject(err);
       },
     });
   });

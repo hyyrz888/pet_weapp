@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { View, Image, Picker } from '@tarojs/components';
-import { useLoad, showToast, uploadFile, navigateBack } from '@tarojs/taro';
+import { showToast, uploadFile, navigateBack } from '@tarojs/taro';
 import { AtInput, AtButton, AtImagePicker, AtModal } from 'taro-ui';
 import { add } from '@/apis/pet';
-import petBg from '../../../../assets/images/bg.png';
+import petBg from '../../../../subpackages/assets/images/bg.png';
 import { baseUrl } from '@/apis';
 import { PET_TYPES } from '@/constants';
 import './index.scss';

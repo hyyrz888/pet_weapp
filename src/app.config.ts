@@ -19,8 +19,15 @@ export default defineAppConfig({
     'pages/mine/afterSales/index',
     'pages/mine/afterSales/as-invoiceApply/index',
     'pages/mine/afterSales/as-invoice/index',
+    'pages/mine/afterSales/as-invoice/detail/index',
   ],
-
+  subpackages: [
+    {
+      root: 'subpackages',
+      name: 'static',
+      pages: ['pages/test/index'],
+    },
+  ],
   tabBar: {
     list: [
       {
@@ -56,7 +63,7 @@ export default defineAppConfig({
     request: 10000,
     downloadFile: 10000,
   },
-  // lazyCodeLoading: 'requiredComponents', // 延迟加载 页面无法加载
+  lazyCodeLoading: 'requiredComponents', // 延迟加载 页面无法加载
   style: 'v2', // 使用2.0版本的样式
   requiredPrivateInfos: ['getLocation', 'chooseLocation'],
   permission: {

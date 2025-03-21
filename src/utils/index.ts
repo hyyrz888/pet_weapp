@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 
-const formatDateTime = (date: Date) => {
+const formatDateTime = (date: string | Date) => {
   return dayjs(date).format('YYYY-MM-DD HH:mm:ss');
 };
 

@@ -1,31 +1,19 @@
-import { useEffect, useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { View, Label, Checkbox, Text, CheckboxGroup } from '@tarojs/components';
-import { useLoad, showToast, navigateTo } from '@tarojs/taro';
+import { useLoad, showToast, navigateTo, setStorageSync } from '@tarojs/taro';
 import { AtButton } from 'taro-ui';
 import { otherFormList, baseInfoFormList } from './model';
 import AddForm from '@/components/AddForm';
-import { add } from '@/apis/book';
-import { getUser } from '@/apis/user';
-import dayjs from 'dayjs';
 import './index.scss';
 
 export default () => {
-  const [formModel, setFormModel] = useState({});
+  const [formModel] = useState({});
   const baseInfoRef = useRef(null);
   const otherInfoRef = useRef(null);
   const [agreement, setAggreement] = useState('');
   useLoad(() => {
     console.log('Page loaded.');
   });
-
-  useEffect(() => {
-    // console.log("Page loaded.");
-    console.log(baseInfoFormList);
-    getUser({}).then((res) => {
-      console.log('res++++', res);
-    });
-  }, []);
-
   const handleSubmit = () => {
     const baseInfo = baseInfoRef.current?.getFormValues() || {};
     const otherInfo = otherInfoRef.current?.getFormValues() || {};
@@ -54,33 +42,24 @@ export default () => {
       ...baseInfo,
       ...otherInfo,
     };
-    add({
-      ...combineInfo,
-      type: combineInfo?.type?.split('/')[0],
-      subType: combineInfo?.type?.split('/')[1],
-      weight: +combineInfo.weight,
-      isRite: +combineInfo.isRite,
-      bookDateTime: new Date(combineInfo.bookDateTime),
-      riteDateTime: new Date(combineInfo.riteDateTime),
-      // bookDateTime: new Date(),
-      expressDateTime: new Date(combineInfo.expressDateTime),
-      totalAmount: 1000, //10元
-    }).then((res) => {
-      console.log('res', res);
-      if (res.code === 200) {
-        const data = res;
-        showToast({
-          title: '预约单创建成功',
-          icon: 'none',
-          success() {
-            setTimeout(() => {
-              navigateTo({
-                url: './additionalService/index?id=' + data.id,
-              });
-            });
-          },
-        });
-      }
+    //添加数据到缓存
+    setStorageSync(
+      'bookInfo',
+      JSON.stringify({
+        ...combineInfo,
+        type: combineInfo?.type?.split('/')[0],
+        subType: combineInfo?.type?.split('/')[1],
+        weight: +combineInfo.weight,
+        isRite: +combineInfo.isRite,
+        bookDateTime: new Date(combineInfo.bookDateTime),
+        riteDateTime: new Date(combineInfo.riteDateTime),
+        // bookDateTime: new Date(),
+        expressDateTime: new Date(combineInfo.expressDateTime),
+        // totalAmount: 1000, //10元
+      })
+    );
+    navigateTo({
+      url: './additionalService/index',
     });
   };
 

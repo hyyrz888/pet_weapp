@@ -1,15 +1,17 @@
 import { useEffect, useState } from 'react';
-import { View, Text, Picker, Image } from '@tarojs/components';
+import { View, Picker, Image } from '@tarojs/components';
 import {
   useLoad,
   navigateBack,
   getStorageSync,
   setStorageSync,
   showToast,
+  uploadFile,
+  chooseImage,
 } from '@tarojs/taro';
-import { AtAvatar, AtListItem, AtList, AtButton, AtInput } from 'taro-ui';
+import { AtAvatar, AtButton, AtInput } from 'taro-ui';
+import { baseUrl } from '@/apis';
 import { GENDER } from '@/constants';
-
 import editIcon from '../../../assets/imgs/edit.png';
 import { putUser } from '@/apis/user';
 import './index.scss';
@@ -30,7 +32,10 @@ export default function Profile() {
     navigateBack();
   };
   const handleSave = () => {
-    putUser(formData).then((res) => {
+    putUser({
+      ...formData,
+      gender: +formData.gender,
+    }).then((res) => {
       console.log(res);
       if (res?.code === 200) {
         // 保存成功
@@ -40,7 +45,6 @@ export default function Profile() {
           ...{
             ...formData,
             nickname: formData.nickname,
-            gender: GENDER.findIndex((item) => item === formData.gender),
           },
         });
         setFormData({
@@ -58,9 +62,11 @@ export default function Profile() {
 
   const handleChange = (val, key) => {
     if (key === 'gender') {
+      console.log(val.detail.value);
       setFormData({
         ...formData,
-        [key]: GENDER[val.detail.value],
+        [key]: val.detail.value,
+        genderDesc: GENDER[val.detail.value],
       });
       return;
     }
@@ -70,16 +76,50 @@ export default function Profile() {
     });
   };
 
+  const handleChoseAvatar = () => {
+    chooseImage({
+      count: 1, // 默认9
+      sizeType: ['original', 'compressed'], // 可以指定是原图还是压缩图，默认二者都有
+      sourceType: ['album', 'camera'], // 可以指定来源是相册还是相机，默认二者都有，在H5浏览器端支持
+    }).then((res) => {
+      console.log(res, 'album');
+      if (!res.tempFilePaths?.length) return;
+      const filePath = res.tempFilePaths[0];
+      uploadFile({
+        url: `${baseUrl}/file`,
+        name: 'file',
+        filePath,
+        success: (res) => {
+          if (res?.statusCode == 200) {
+            const { data = {} } = res?.data ? JSON.parse(res.data) : {};
+            console.log(data);
+            setFormData({
+              ...formData,
+              avatar: baseUrl + '/' + data?.path,
+              imageIds: [data?.id],
+            });
+          }
+        },
+        fail: () => {
+          showToast({
+            title: '上传失败',
+            icon: 'none',
+          });
+        },
+      });
+    });
+  };
+
   useEffect(() => {
     const userInfo = getStorageSync('userInfo');
-    console.log(userInfo);
     if (userInfo) {
       setFormData({
         ...formData,
         username: userInfo.username,
         phone: userInfo.phone,
         avatar: userInfo.avatar,
-        gender: GENDER[userInfo.gender],
+        gender: userInfo.gender,
+        genderDesc: GENDER[userInfo.gender],
       });
     }
   }, []);
@@ -87,12 +127,11 @@ export default function Profile() {
   return (
     <View className="page-profile">
       <View className="form-box">
-        <View className="header">
+        <View className="header" onClick={handleChoseAvatar}>
           <AtAvatar
-            image={formData.avatarUrl}
+            image={formData.avatar}
             circle
             className="avatar"
-            openData={{ type: 'userAvatarUrl' }}
             size="large"
           />
           <View className="edit-box">
@@ -128,7 +167,7 @@ export default function Profile() {
             name="gender"
             title="性别"
             placeholder="请选择您的性别"
-            value={formData['gender']}
+            value={formData['genderDesc']}
           />
         </Picker>
 

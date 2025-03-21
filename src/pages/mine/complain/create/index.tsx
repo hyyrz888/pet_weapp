@@ -23,9 +23,11 @@ export default function Create() {
     }).then(() => {
       showToast({
         title: '提交成功!',
-        icon: 'success',
+        icon: 'none',
         success() {
-          navigateBack();
+          setTimeout(() => {
+            navigateBack();
+          }, 1000);
         },
       });
     });

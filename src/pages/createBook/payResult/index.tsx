@@ -1,6 +1,6 @@
 import { View, Image } from '@tarojs/components';
 import { useLoad, navigateTo } from '@tarojs/taro';
-import payResult from '../../../assets/images/payResult.png';
+import payResult from '../../../subpackages/assets/images/payResult.png';
 import './index.scss';
 
 export default function OtherBookService() {

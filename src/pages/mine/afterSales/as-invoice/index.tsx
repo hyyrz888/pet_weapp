@@ -35,12 +35,12 @@ export default function Index() {
     console.log(item);
     if (pageType === 'wdsq') {
       navigateTo({
-        url: './detail',
+        url: `./detail/index?id=${item.id}&payAmount=${item?.book?.payAmount}`,
       });
       return;
     }
     navigateTo({
-      url: `../as-invoiceApply/index?id=${item.id}&type=${pageType}&payAmount=${item.payAmount}`,
+      url: `../as-invoiceApply/index?id=${item.id}&type=${pageType}&payAmount=${item?.payAmount}`,
     });
   };
 

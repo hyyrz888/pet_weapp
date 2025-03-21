@@ -1,11 +1,12 @@
 .index {
-  background-image: url(../../assets/images/mainBg.png);
+  background-image: url(../../subpackages/assets/images/mainBg.png);
   background-size: 100% 100%;
   padding-top: 80px;
   height: 100%;
   .avatar {
     width: 140px;
     height: 140px;
+    border-radius: 50%;
   }
   .btnBox {
     width: 500px;

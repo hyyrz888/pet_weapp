@@ -183,7 +183,7 @@ const otherFormList = [
   },
   {
     label: '门牌号',
-    prop: 'address',
+    prop: 'detail',
     type: 'input',
     itemProps: {
       placeholder: '详细地址，例1层101室',

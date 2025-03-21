@@ -11,7 +11,7 @@ import {
   AtButton,
 } from 'taro-ui';
 import { list } from '@/apis/book';
-import sheetCat from '../../../assets/images/sheetCat.png';
+import sheetCat from '../../../subpackages/assets/images/sheetCat.png';
 import dayjs from 'dayjs';
 import './index.scss';
 
@@ -114,6 +114,7 @@ export default function Index() {
   };
 
   const handleToDetail = (item) => {
+    console.log(item);
     if (!item?.id) return;
     navigateTo({
       url: `./detail/index?id=${item.id}statuName=${obj[item.statu]?.label}`,

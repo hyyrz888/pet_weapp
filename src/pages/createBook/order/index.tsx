@@ -1,21 +1,27 @@
 import { Checkbox, View, CheckboxGroup, Label, Text } from '@tarojs/components';
 import { useState, useEffect } from 'react';
 import { AtList, AtListItem, AtButton } from 'taro-ui';
-import { navigateTo, useLoad, showToast } from '@tarojs/taro';
+import { navigateTo, useLoad, showToast, requestPayment } from '@tarojs/taro';
 import { detail } from '@/apis/book';
 import dayjs from 'dayjs';
 import './index.scss';
 
 export default () => {
   const [order, setOrder] = useState({});
-  const [agreement, setAggreement] = useState('');
+  const [agreement, setAgreement] = useState(false);
   useLoad((option) => {
-    if (!option?.id) {
-      detail('01959017-ff4d-7d01-a2d2-6ffdf3c9f70a').then((res) => {
-        console.log(res);
+    console.log(option);
+
+    if (option?.id) {
+      detail(option?.id).then((res) => {
+        console.log(res, 'order updated');
         //setOrder({...order,book:res.data.book})
         if (res.code === 200) {
-          setOrder(res.data);
+          setOrder({
+            ...order,
+            ...res.data,
+            payAmount: 0.1,
+          });
         }
       });
     }
@@ -39,28 +45,39 @@ export default () => {
   };
 
   const handleChange = (e) => {
-    console.log(e);
+    setAgreement(e.detail.value[0] === '1');
     // setOrder({ ...order, book: e.detail.value.join(',') });
   };
 
   const handlePay = () => {
     if (!agreement) {
       return showToast({
-        title: '请勾选用户购买套餐协议',
+        title: '请勾选商品支付协议',
         icon: 'none',
       });
     }
-    navigateTo({
-      url: '/pages/createBook/payResult/index',
+    requestPayment({
+      timeStamp: '',
+      nonceStr: '',
+      package: '',
+      signType: 'MD5',
+      paySign: '',
+      success: function (res) {
+        navigateTo({
+          url: '/pages/createBook/payResult/index',
+        });
+      },
+      fail: function (error) {
+        console.log(error);
+      },
     });
   };
-  useEffect(() => {}, []);
 
   return (
     <View className="page-order">
       <AtList>
         <AtListItem title="基础服务" extraText={order.menu || '-'} />
-        <AtListItem title="联系人" extraText={order.email || '-'} />
+        <AtListItem title="联系人" extraText={order.username || '-'} />
         <AtListItem title="联系电话" extraText={order.phone || '-'} />
         <AtListItem title="爱宠名字" extraText={order?.pet?.petname || '-'} />
         <AtListItem
@@ -68,7 +85,7 @@ export default () => {
           extraText={formatDate(order.bookDateTime) || '-'}
         />
         <AtListItem title="接收地址" extraText={getAddress(order.address)} />
-        <AtListItem title="门牌号" extraText={order.addressId || '-'} />
+        <AtListItem title="门牌号" extraText={order?.address?.detail || '-'} />
 
         {order.bookGoods?.length > 0 && (
           <>
@@ -105,7 +122,7 @@ export default () => {
           总金额:<Text className="price">¥{formatPrice(order.payAmount)}</Text>
         </View>
         <AtButton
-          disabled={!order.payAmount}
+          // disabled={!order.payAmount}
           circle
           className="payBtn"
           onClick={handlePay}

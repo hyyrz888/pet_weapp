@@ -140,10 +140,10 @@ export default forwardRef((props, ref) => {
             setFormData({
               ...formData,
               [formItem.prop]: `${province}-${city}-${district}`,
-              address: street,
+              detail: street,
               province,
               city,
-              district,
+              area: district,
             });
           },
         });
@@ -242,13 +242,10 @@ export default forwardRef((props, ref) => {
     console.log('提交表单', formData);
     if (!validateForm()) return {};
 
-    const formValues = Object.keys(formData).reduce(
-      (acc, key) => {
-        acc[key] = formData[key] || '';
-        return acc;
-      },
-      {} as Record<string, string>
-    );
+    const formValues = Object.keys(formData).reduce((acc, key) => {
+      acc[key] = formData[key] || '';
+      return acc;
+    }, {} as Record<string, string>);
 
     console.log(formValues);
     handleSubmit?.(formValues);

@@ -1,8 +1,14 @@
 import { View, Text, Image } from '@tarojs/components';
-import Taro, { useLoad } from '@tarojs/taro';
-import { AtAvatar, AtButton, AtToast, AtActionSheet } from 'taro-ui';
+import {
+  getStorageSync,
+  showToast,
+  navigateTo,
+  removeStorageSync,
+} from '@tarojs/taro';
+import { AtButton, AtActionSheet } from 'taro-ui';
 import { Suspense, useEffect, useState } from 'react';
 import { list } from '@/apis/bookGood';
+import { add } from '@/apis/book';
 import './index.scss';
 
 interface IDataItem {
@@ -13,57 +19,63 @@ interface IDataItem {
 }
 
 export default function AdditionalService() {
-  useLoad((option) => {
-    if (option?.id) {
-      setId(option.id);
-    }
-  });
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  //附加服务的价格加上基本服务的价格
+  const [totalAmount, setToalAmount] = useState(0);
+  const [selectedIndex, setSelectedIndex] = useState([]);
   const [isOpened, setIsOpened] = useState(false);
   const [selectedItem, setSelectedItem] = useState<IDataItem>();
-  const [id, setId] = useState('');
-  const [data, setData] = useState<IDataItem[]>([
-    {
-      title: '代存25天服务',
-      image: '',
-      id: '1221',
-      price: '120',
-    },
-    {
-      title: '代存28天服务',
-      image: '',
-      id: '1221',
-      price: '120',
-    },
-    {
-      title: '遗体清洁',
-      image: '',
-      id: '1221',
-      price: '20',
-    },
-    {
-      title: '遗体清洁',
-      image: '',
-      id: '1221',
-      price: '20',
-    },
-    {
-      title: '遗体清洁',
-      image: '',
-      id: '1221',
-      price: '20',
-    },
-    {
-      title: '遗体清洁',
-      image: '',
-      id: '1221',
-      price: '20',
-    },
-  ]);
+  const [data, setData] = useState<IDataItem[]>([]);
 
+  // 已选中的附加服务的价格
+  useEffect(() => {
+    // const bookInfo = JSON.parse(getStorageSync('bookInfo') || '{}');
+    // setToalAmount(bookInfo?.totalAmount);
+    const totalPrice = data?.reduce((acc, item) => {
+      if (selectedIndex.includes(item.id)) {
+        return acc + item.price;
+      }
+      return acc;
+    }, 0.1);
+    setToalAmount(totalPrice);
+  }, [selectedIndex]);
+
+  const createAppointBill = () => {
+    const bookInfo = JSON.parse(getStorageSync('bookInfo') || '{}');
+    add({ ...bookInfo, bookGoodIds: selectedIndex, totalAmount }).then(
+      (res) => {
+        console.log('res', res);
+        if (res.code === 200) {
+          const { data } = res;
+          showToast({
+            title: '预约单创建成功',
+            icon: 'none',
+            success() {
+              removeStorageSync('bookInfo');
+              setTimeout(() => {
+                navigateTo({
+                  url: '../order/index?id=' + data.id,
+                });
+              }, 1000);
+            },
+          });
+        }
+      }
+    );
+  };
+
+  const handleSelectItem = (index: number) => {
+    console.log(index, selectedIndex);
+    if (selectedIndex.indexOf(index) > -1) {
+      selectedIndex.splice(selectedIndex.indexOf(index), 1);
+    } else {
+      selectedIndex.push(index);
+    }
+    setSelectedIndex([...selectedIndex]);
+  };
   const handleNextStep = () => {
     console.log('next step');
-    Taro.navigateTo({ url: `../order/index?id=${id}` });
+    //需要传递附加服务
+    createAppointBill();
   };
 
   const getData = async () => {
@@ -79,53 +91,66 @@ export default function AdditionalService() {
     setIsOpened(false);
   };
 
-  const handleShowDetail = (id: string) => {
+  const handleShowDetail = (e, id: string) => {
+    //阻止冒泡
+    e.stopPropagation();
     setIsOpened(true);
     setSelectedItem(data?.find((item) => item.id === id));
   };
 
-  // const data = use(getData());
   useEffect(() => {
     getData();
   }, []);
 
   return (
-    // <AtToast isOpened={true} text="正在加载" status="loading"></AtToast>
     <Suspense fallback={<Text>加载中...</Text>}>
       <View className="page-additionalService">
         <View className="content">
-          {data.map((item, index) => (
-            <View
-              className={`as-item ${selectedIndex === index ? 'selected' : ''}`}
-              key={index}
-              onClick={() => setSelectedIndex(index)}
-            >
-              <View className="as-item__image">
-                <Image
-                  className="image"
-                  mode="widthFix"
-                  style={{ width: '80px' }}
-                  src="https://picsum.photos/300/300"
-                ></Image>
-              </View>
-              <View className="as-item__content">
-                <View className="as-item__content-name">{item.title}</View>
-                {selectedIndex === index ? (
-                  <View
-                    onClick={() => handleShowDetail(item.id)}
-                    className="goDetail"
-                  >
-                    查看详情
+          {data?.length ? (
+            data.map((item, index) => (
+              <View className="inner">
+                <View
+                  className={`as-item ${
+                    selectedIndex.includes(index) ? 'selected' : ''
+                  }`}
+                  key={index}
+                  onClick={() => handleSelectItem(index)}
+                >
+                  <View className="as-item__image">
+                    <Image
+                      className="image"
+                      mode="widthFix"
+                      style={{ width: '80px' }}
+                      src="https://picsum.photos/300/300"
+                    ></Image>
                   </View>
-                ) : null}
-                <View className="as-item__content-price">¥{item.price}</View>
+                  <View className="as-item__content">
+                    <View className="as-item__content-name">{item.title}</View>
+                    <View
+                      onClick={(e) => handleShowDetail(e, item.id)}
+                      className="goDetail"
+                    >
+                      查看详情
+                    </View>
+
+                    <View className="as-item__content-price">
+                      ¥{item.price}
+                    </View>
+                  </View>
+                </View>
               </View>
-            </View>
-          ))}
+            ))
+          ) : (
+            <View>暂无附加服务数据</View>
+          )}
         </View>
 
         <View className="footer mt-40 flex gap-4">
-          <AtButton type="secondary" className="btn flex-1">
+          <AtButton
+            type="secondary"
+            className="btn flex-1"
+            onClick={handleNextStep}
+          >
             跳过
           </AtButton>
           <AtButton
