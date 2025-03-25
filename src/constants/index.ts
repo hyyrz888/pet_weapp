@@ -24,4 +24,17 @@ const TICKET_TYPE = [
   },
 ];
 
-export { ORDER_STATUS, PET_TYPES, GENDER, TICKET_TYPE };
+const BASE_SERVICES = [
+  {
+    label: '上门服务',
+    value: 1,
+    price: '100',
+  },
+  {
+    label: '预约服务',
+    value: 2,
+    price: '200',
+  },
+];
+
+export { ORDER_STATUS, PET_TYPES, GENDER, BASE_SERVICES, TICKET_TYPE };

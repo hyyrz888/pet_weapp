@@ -4,11 +4,18 @@
   "setting": {
     "compileHotReLoad": true,
     "urlCheck": false,
-    "skylineRenderEnable": false
+    "skylineRenderEnable": true
   },
   "condition": {
     "miniprogram": {
       "list": [
+        {
+          "name": "pages/createBook/payResult/index",
+          "pathName": "pages/createBook/payResult/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
         {
           "name": "pages/index/index",
           "pathName": "pages/index/index",
@@ -103,5 +110,5 @@
       ]
     }
   },
-  "libVersion": "3.7.10"
+  "libVersion": "3.7.11"
 }

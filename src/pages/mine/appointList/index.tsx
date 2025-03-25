@@ -117,7 +117,7 @@ export default function Index() {
     console.log(item);
     if (!item?.id) return;
     navigateTo({
-      url: `./detail/index?id=${item.id}statuName=${obj[item.statu]?.label}`,
+      url: `./detail/index?id=${item.id}&statuName=${obj[item.statu]?.label}`,
     });
   };
 

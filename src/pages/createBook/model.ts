@@ -65,19 +65,19 @@ const otherFormList = [
       {
         id: 1,
         label: '上门服务',
-        content: '1',
+        content: '我是上门服务',
       },
       {
         id: 2,
         Label: '预约服务',
-        content: '2',
+        content: '我是预约服务',
       },
     ],
     rules: [],
   },
   {
     label: '日期选择', //"上门服务日期",
-    prop: 'expressDateTime',
+    prop: 'bookDateTime',
     type: 'picker-date',
     itemProps: {
       placeholder: '请选择上门服务日期',
@@ -137,11 +137,11 @@ const otherFormList = [
       {
         label: '邮寄寄送',
         value: '1',
+        checked: true,
       },
       {
         label: '自行提取',
         value: '2',
-        checked: true,
       },
       {
         label: '放弃处置',
@@ -163,11 +163,11 @@ const otherFormList = [
     hidden: true,
   },
   {
-    label: '自行提取时间',
-    prop: 'bookDateTime',
+    label: '遗物处理时间',
+    prop: 'handleDateTime',
     type: 'picker-date',
     itemProps: {
-      placeholder: '请选择自行提取时间',
+      placeholder: '请选择遗物处理时间',
     },
     rules: [],
   },

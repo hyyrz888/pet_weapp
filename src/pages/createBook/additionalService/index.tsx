@@ -9,6 +9,8 @@ import { AtButton, AtActionSheet } from 'taro-ui';
 import { Suspense, useEffect, useState } from 'react';
 import { list } from '@/apis/bookGood';
 import { add } from '@/apis/book';
+import { fileUrl } from '@/apis';
+import { formatPrice } from '@/utils';
 import './index.scss';
 
 interface IDataItem {
@@ -20,7 +22,7 @@ interface IDataItem {
 
 export default function AdditionalService() {
   //附加服务的价格加上基本服务的价格
-  const [totalAmount, setToalAmount] = useState(0);
+  const [totalAmount, setToalAmount] = useState(1); //1分钱
   const [selectedIndex, setSelectedIndex] = useState([]);
   const [isOpened, setIsOpened] = useState(false);
   const [selectedItem, setSelectedItem] = useState<IDataItem>();
@@ -30,47 +32,53 @@ export default function AdditionalService() {
   useEffect(() => {
     // const bookInfo = JSON.parse(getStorageSync('bookInfo') || '{}');
     // setToalAmount(bookInfo?.totalAmount);
-    const totalPrice = data?.reduce((acc, item) => {
-      if (selectedIndex.includes(item.id)) {
+
+    const totalPrice = data?.reduce((acc, item, index) => {
+      if (selectedIndex.includes(index)) {
         return acc + item.price;
       }
       return acc;
-    }, 0.1);
+    }, totalAmount);
     setToalAmount(totalPrice);
+    console.log('selectedIndex', totalAmount, totalPrice);
   }, [selectedIndex]);
 
   const createAppointBill = () => {
     const bookInfo = JSON.parse(getStorageSync('bookInfo') || '{}');
-    add({ ...bookInfo, bookGoodIds: selectedIndex, totalAmount }).then(
-      (res) => {
-        console.log('res', res);
-        if (res.code === 200) {
-          const { data } = res;
-          showToast({
-            title: '预约单创建成功',
-            icon: 'none',
-            success() {
-              removeStorageSync('bookInfo');
-              setTimeout(() => {
-                navigateTo({
-                  url: '../order/index?id=' + data.id,
-                });
-              }, 1000);
-            },
-          });
-        }
+    add({
+      ...bookInfo,
+      bookGoodIds: data
+        .filter((item, index) => selectedIndex.includes(index))
+        .map((item) => item.id),
+      totalAmount,
+    }).then((res) => {
+      console.log('res', res);
+      if (res.code === 200) {
+        const { data } = res;
+        showToast({
+          title: '预约单创建成功',
+          icon: 'none',
+          success() {
+            removeStorageSync('bookInfo');
+            setTimeout(() => {
+              navigateTo({
+                url: '../order/index?id=' + data.id,
+              });
+            }, 1000);
+          },
+        });
       }
-    );
+    });
   };
 
   const handleSelectItem = (index: number) => {
-    console.log(index, selectedIndex);
     if (selectedIndex.indexOf(index) > -1) {
       selectedIndex.splice(selectedIndex.indexOf(index), 1);
     } else {
       selectedIndex.push(index);
     }
     setSelectedIndex([...selectedIndex]);
+    console.log(index, selectedIndex);
   };
   const handleNextStep = () => {
     console.log('next step');
@@ -83,7 +91,12 @@ export default function AdditionalService() {
     await list().then((res) => {
       const { data = [] } = res;
       console.log('data', data);
-      setData(data);
+      setData(
+        data.map((item) => ({
+          ...item,
+          imageUrl: item?.thumb?.path?.replace('\\', '/'),
+        }))
+      );
     });
   };
 
@@ -121,7 +134,7 @@ export default function AdditionalService() {
                       className="image"
                       mode="widthFix"
                       style={{ width: '80px' }}
-                      src="https://picsum.photos/300/300"
+                      src={fileUrl + '/' + item.imageUrl}
                     ></Image>
                   </View>
                   <View className="as-item__content">
@@ -134,7 +147,7 @@ export default function AdditionalService() {
                     </View>
 
                     <View className="as-item__content-price">
-                      ¥{item.price}
+                      ¥{formatPrice(item.price)}
                     </View>
                   </View>
                 </View>

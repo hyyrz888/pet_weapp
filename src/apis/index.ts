@@ -1,6 +1,7 @@
 import Taro, { clearStorageSync, getStorageSync } from '@tarojs/taro';
 import { showToast } from '@tarojs/taro';
 export const baseUrl = process.env.TARO_APP_API;
+export const fileUrl = process.env.TARO_APP_API;
 export default function (url: string, options: any = {}) {
   return new Promise<any>((resolve, reject) => {
     const token = getStorageSync('token') || '';

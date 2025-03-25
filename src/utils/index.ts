@@ -4,4 +4,9 @@ const formatDateTime = (date: string | Date) => {
   return dayjs(date).format('YYYY-MM-DD HH:mm:ss');
 };
 
-export { formatDateTime };
+//格式化金额 分为单位
+const formatPrice = (price: number) => {
+  return (price / 100).toLocaleString() || 0;
+};
+
+export { formatDateTime, formatPrice };

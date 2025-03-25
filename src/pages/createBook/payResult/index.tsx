@@ -1,17 +1,23 @@
+import { useState } from 'react';
 import { View, Image } from '@tarojs/components';
 import { useLoad, navigateTo } from '@tarojs/taro';
 import payResult from '../../../subpackages/assets/images/payResult.png';
 import './index.scss';
 
 export default function OtherBookService() {
-  useLoad(() => {
+  const [id, setId] = useState('');
+  useLoad((option) => {
     console.log('Page loaded.');
+    if (option?.id) {
+      setId(option.id);
+    }
   });
 
   const goView = () => {
     // 跳转我的预约
     navigateTo({
-      url: '/pages/mine/appointList/detail/index',
+      url:
+        '/pages/mine/appointList/detail/index?id=' + id + '&statuName=已付款',
     });
   };
   return (

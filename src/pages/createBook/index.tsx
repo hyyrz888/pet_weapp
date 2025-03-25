@@ -23,12 +23,15 @@ export default () => {
         icon: 'none',
       });
     }
-    if (!otherInfo?.bookDateTime) {
-      return showToast({
-        title: '自行提取时间不为空',
-        icon: 'none',
-      });
+    if (otherInfo?.handleWay) {
+      if (!otherInfo?.handleDateTime) {
+        return showToast({
+          title: '遗物处理不为空',
+          icon: 'none',
+        });
+      }
     }
+
     if (!agreement) {
       return showToast({
         title: '请勾选用户购买套餐协议',
@@ -54,7 +57,7 @@ export default () => {
         bookDateTime: new Date(combineInfo.bookDateTime),
         riteDateTime: new Date(combineInfo.riteDateTime),
         // bookDateTime: new Date(),
-        expressDateTime: new Date(combineInfo.expressDateTime),
+        handleDateTime: new Date(combineInfo.expressDateTime),
         // totalAmount: 1000, //10元
       })
     );

@@ -2,7 +2,9 @@ import { Checkbox, View, CheckboxGroup, Label, Text } from '@tarojs/components';
 import { useState, useEffect } from 'react';
 import { AtList, AtListItem, AtButton } from 'taro-ui';
 import { navigateTo, useLoad, showToast, requestPayment } from '@tarojs/taro';
-import { detail } from '@/apis/book';
+import { detail, prepay, pay } from '@/apis/book';
+import { BASE_SERVICES } from '@/constants';
+
 import dayjs from 'dayjs';
 import './index.scss';
 
@@ -20,7 +22,10 @@ export default () => {
           setOrder({
             ...order,
             ...res.data,
-            payAmount: 0.1,
+            menuDesc: BASE_SERVICES?.find(
+              (item) => item.value === res.data.menu
+            )?.label, //服务名称
+            totalAmount: 0.1,
           });
         }
       });
@@ -56,27 +61,56 @@ export default () => {
         icon: 'none',
       });
     }
-    requestPayment({
-      timeStamp: '',
-      nonceStr: '',
-      package: '',
-      signType: 'MD5',
-      paySign: '',
-      success: function (res) {
-        navigateTo({
-          url: '/pages/createBook/payResult/index',
+    //发起预支付
+    prepay({
+      bookId: order.id,
+    }).then((res) => {
+      if (res.code === 200) {
+        console.log(res);
+        const { prepay_id } = res.data;
+        //发起支付
+        pay({
+          prepayId: prepay_id,
+        }).then((res) => {
+          if (res.code === 200) {
+            const {
+              timeStamp,
+              nonceStr,
+              signType,
+              package: _pkg,
+              paySign,
+            } = res.data;
+            console.log(res.data, '>>>>>>>');
+
+            requestPayment({
+              timeStamp,
+              nonceStr,
+              package: _pkg,
+              signType,
+              paySign,
+              success: function () {
+                navigateTo({
+                  url: '/pages/createBook/payResult/index?id=' + order.id,
+                });
+              },
+              fail: function (error) {
+                console.log(error);
+                showToast({
+                  title: '支付失败',
+                  icon: 'none',
+                });
+              },
+            });
+          }
         });
-      },
-      fail: function (error) {
-        console.log(error);
-      },
+      }
     });
   };
 
   return (
     <View className="page-order">
       <AtList>
-        <AtListItem title="基础服务" extraText={order.menu || '-'} />
+        <AtListItem title="基础服务" extraText={order.menuDesc || '-'} />
         <AtListItem title="联系人" extraText={order.username || '-'} />
         <AtListItem title="联系电话" extraText={order.phone || '-'} />
         <AtListItem title="爱宠名字" extraText={order?.pet?.petname || '-'} />

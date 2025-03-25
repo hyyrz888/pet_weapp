@@ -69,6 +69,9 @@ export default forwardRef((props, ref) => {
         formData['legcyWayCheck'] = '';
         _formList.find((item) => item.prop === 'legcyWayCheck').hidden =
           e.detail.value !== '3';
+        if (e.detail.value === '3') formData['handleDateTime'] = null;
+        _formList.find((item) => item.prop === 'handleDateTime').hidden =
+          e.detail.value === '3';
       }
 
       setFormData({
