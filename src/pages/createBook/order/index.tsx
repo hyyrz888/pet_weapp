@@ -1,16 +1,41 @@
 import { Checkbox, View, CheckboxGroup, Label, Text } from '@tarojs/components';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { AtList, AtListItem, AtButton } from 'taro-ui';
-import { navigateTo, useLoad, showToast, requestPayment } from '@tarojs/taro';
+import {
+  redirectTo,
+  useLoad,
+  removeStorageSync,
+  showToast,
+  requestPayment,
+  requestSubscribeMessage,
+  getSetting,
+} from '@tarojs/taro';
 import { detail, prepay, pay } from '@/apis/book';
 import { BASE_SERVICES } from '@/constants';
-
+import { formatPrice } from '@/utils';
 import dayjs from 'dayjs';
 import './index.scss';
 
 export default () => {
-  const [order, setOrder] = useState({});
+  const [order, setOrder] = useState({
+    orderId: '',
+    username: '',
+    phone: '',
+    petname: '',
+    pet: {
+      petname: '',
+    },
+    bookDateTime: '',
+    menuDesc: '',
+    address: {
+      detail: '',
+    },
+    bookGoods: [],
+    mark: '',
+    payAmount: '',
+  });
   const [agreement, setAgreement] = useState(false);
+  const [payDisabled, setPayDisabled] = useState(false);
   useLoad((option) => {
     console.log(option);
 
@@ -25,19 +50,11 @@ export default () => {
             menuDesc: BASE_SERVICES?.find(
               (item) => item.value === res.data.menu
             )?.label, //服务名称
-            totalAmount: 0.1,
           });
         }
       });
     }
   });
-
-  const formatPrice = (price) => {
-    if (!price) return '0';
-    return Number(price / 100)
-      .toFixed(2)
-      .toLocaleString();
-  };
 
   const formatDate = (date) => {
     if (!date) return '-';
@@ -53,7 +70,55 @@ export default () => {
     setAgreement(e.detail.value[0] === '1');
     // setOrder({ ...order, book: e.detail.value.join(',') });
   };
+  const handleTest = () => {
+    console.log('test');
 
+    getSetting({
+      withSubscriptions: true,
+      success: function (res) {
+        if (
+          res.subscriptionsSetting.mainSwitch &&
+          res.subscriptionsSetting.mainSwitch != null
+        ) {
+          if (res.subscriptionsSetting.itemSettings) {
+            let moIdState =
+              res.subscriptionsSetting.itemSettings[
+                'XKQpCEj93wAHPxWaQoET5UwYHkHHnCDP_K4YtOeRpkY'
+              ];
+            if (moIdState === 'accept') {
+              console.log('同意消息推送');
+            } else if (moIdState === 'reject') {
+              console.log('拒绝消息推送');
+            } else if (moIdState === 'ban') {
+              console.log('已被后台封禁');
+            }
+          }
+        } else {
+          if (requestSubscribeMessage) {
+            requestSubscribeMessage({
+              tmplIds: [
+                'XKQpCEj93wAHPxWaQoET5UwYHkHHnCDP_K4YtOeRpkY',
+                'fIijh96IYidJFYVTWwW2FsvEu2b7yKaQ7MO9FDv8M7U',
+              ],
+              entityIds: [
+                'XKQpCEj93wAHPxWaQoET5UwYHkHHnCDP_K4YtOeRpkY',
+                'fIijh96IYidJFYVTWwW2FsvEu2b7yKaQ7MO9FDv8M7U',
+              ],
+              success(res) {
+                console.log('同意消息推送');
+              },
+              fail(res) {
+                console.log('requestSubscribeMessage fail', res);
+              },
+            });
+          }
+        }
+      },
+      fail: function (error) {
+        console.log(error);
+      },
+    });
+  };
   const handlePay = () => {
     if (!agreement) {
       return showToast({
@@ -82,23 +147,42 @@ export default () => {
             } = res.data;
             console.log(res.data, '>>>>>>>');
 
-            requestPayment({
-              timeStamp,
-              nonceStr,
-              package: _pkg,
-              signType,
-              paySign,
-              success: function () {
-                navigateTo({
-                  url: '/pages/createBook/payResult/index?id=' + order.id,
+            //弹窗授权窗口
+            requestSubscribeMessage({
+              tmplIds: [
+                'XKQpCEj93wAHPxWaQoET5UwYHkHHnCDP_K4YtOeRpkY',
+                'fIijh96IYidJFYVTWwW2FsvEu2b7yKaQ7MO9FDv8M7U',
+              ],
+              entityIds: [
+                'XKQpCEj93wAHPxWaQoET5UwYHkHHnCDP_K4YtOeRpkY',
+                'fIijh96IYidJFYVTWwW2FsvEu2b7yKaQ7MO9FDv8M7U',
+              ],
+              success: function (res) {
+                console.log(res, '订阅成功');
+                requestPayment({
+                  timeStamp,
+                  nonceStr,
+                  package: _pkg,
+                  signType,
+                  paySign,
+                  success: function () {
+                    removeStorageSync('bookInfo');
+                    setPayDisabled(true);
+                    redirectTo({
+                      url: '/pages/createBook/payResult/index?id=' + order.id,
+                    });
+                  },
+                  fail: function (error) {
+                    console.log(error);
+                    showToast({
+                      title: '支付失败',
+                      icon: 'none',
+                    });
+                  },
                 });
               },
-              fail: function (error) {
-                console.log(error);
-                showToast({
-                  title: '支付失败',
-                  icon: 'none',
-                });
+              fail: function (err) {
+                console.log(err, '订阅消息失败');
               },
             });
           }
@@ -109,24 +193,31 @@ export default () => {
 
   return (
     <View className="page-order">
+      <View type="primary" onClick={handleTest}></View>
       <AtList>
-        <AtListItem title="基础服务" extraText={order.menuDesc || '-'} />
-        <AtListItem title="联系人" extraText={order.username || '-'} />
-        <AtListItem title="联系电话" extraText={order.phone || '-'} />
-        <AtListItem title="爱宠名字" extraText={order?.pet?.petname || '-'} />
+        <AtListItem title="基础服务" extraText={<>{order.menuDesc || '-'}</>} />
+        <AtListItem title="联系人" extraText={<>{order.username || '-'}</>} />
+        <AtListItem title="联系电话" extraText={<>{order.phone || '-'}</>} />
+        <AtListItem
+          title="爱宠名字"
+          extraText={<>{order?.pet?.petname || '-'}</>}
+        />
         <AtListItem
           title="预约时间"
-          extraText={formatDate(order.bookDateTime) || '-'}
+          extraText={<>{formatDate(order.bookDateTime) || '-'}</>}
         />
         <AtListItem title="接收地址" extraText={getAddress(order.address)} />
-        <AtListItem title="门牌号" extraText={order?.address?.detail || '-'} />
+        <AtListItem
+          title="门牌号"
+          extraText={<>{order?.address?.detail || '-'}</>}
+        />
 
-        {order.bookGoods?.length > 0 && (
+        {order?.bookGoods?.length > 0 && (
           <>
             <AtListItem title="附加服务" extraText="" />
             <View className="subInfo first-child">
               {order.bookGoods?.map((item) => {
-                return <View className="sub-item">{item}</View>;
+                return <View className="sub-item">{item.bookGood.title}</View>;
               })}
             </View>
           </>
@@ -153,10 +244,11 @@ export default () => {
 
       <View className="payTools">
         <View className="payPrice">
-          总金额:<Text className="price">¥{formatPrice(order.payAmount)}</Text>
+          总金额:
+          <Text className="price">¥{formatPrice(order.totalAmount)}</Text>
         </View>
         <AtButton
-          // disabled={!order.payAmount}
+          disabled={payDisabled}
           circle
           className="payBtn"
           onClick={handlePay}

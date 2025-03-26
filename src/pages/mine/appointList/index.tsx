@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { View, Text, Image } from '@tarojs/components';
-import { navigateTo, useDidShow } from '@tarojs/taro';
+import { navigateTo, useDidShow, showToast } from '@tarojs/taro';
 import {
   AtAvatar,
   AtRate,
@@ -10,9 +10,11 @@ import {
   AtTextarea,
   AtButton,
 } from 'taro-ui';
-import { list } from '@/apis/book';
+import { evaluate, getEvaluate, list } from '@/apis/book';
 import sheetCat from '../../../subpackages/assets/images/sheetCat.png';
 import dayjs from 'dayjs';
+import { BASE_SERVICES } from '@/constants';
+import { formatPrice } from '@/utils';
 import './index.scss';
 
 const tabList = [
@@ -56,6 +58,7 @@ export default function Index() {
   const [isOpened, setIsOpened] = useState(false);
   const [context, setContext] = useState('');
   const [rateValue, setRate] = useState(5);
+  const [bookId, setBookId] = useState('');
   const getlist = async () => {
     const res = await list();
     if (res.code === 200) {
@@ -90,8 +93,16 @@ export default function Index() {
     );
   };
 
-  const handleEvalClick = () => {
-    setIsOpened(true);
+  const handleEvalClick = (bookId: string) => {
+    setBookId(bookId);
+    getEvaluate(bookId).then((res) => {
+      if (res.code === 200) {
+        const { data } = res;
+        setRate(data?.score);
+        setContext(data?.content);
+        setIsOpened(true);
+      }
+    });
   };
 
   const handleRateChange = (value) => {
@@ -99,7 +110,24 @@ export default function Index() {
   };
 
   const handleSubmit = () => {
-    setIsOpened(false);
+    evaluate({
+      bookId,
+      score: rateValue,
+      content: context,
+    }).then((res) => {
+      if (res.code === 200) {
+        showToast({
+          title: '评价成功',
+          icon: 'success',
+          success() {
+            setTimeout(() => {
+              setIsOpened(false);
+              getlist();
+            }, 1000);
+          },
+        });
+      }
+    });
   };
   const handleToInvoice = () => {
     navigateTo({
@@ -141,16 +169,28 @@ export default function Index() {
                       image="https://img.yzcdn.cn/vant/cat.jpeg"
                     ></AtAvatar>
                     <View className="ml-20 item-body-right">
-                      <View className="title">
-                        {item.menu}
-                        <Text className="text-price">¥{item.payAmount}</Text>
+                      <View className="title mb-10">
+                        {
+                          BASE_SERVICES.find((n) => n.value === item.menu)
+                            ?.label
+                        }
+                        <Text className="text-price">
+                          ¥{formatPrice(item.totalAmount)}
+                        </Text>
                       </View>
-                      <View className="info">
-                        附加服务：<Text className="text-888">服务内容</Text>
+                      <View className="info mb-10">
+                        附加服务：
+                        <Text className="text-888">
+                          {item?.bookGoods
+                            ?.map((n) => n.bookGood.title)
+                            .join(',') || '无'}
+                        </Text>
                       </View>
                       <View>
                         实际支付：
-                        <Text className="text-price">¥{item.totalAmount}</Text>
+                        <Text className="text-price">
+                          ¥{formatPrice(item.totalAmount)}
+                        </Text>
                       </View>
                     </View>
                   </View>
@@ -169,7 +209,7 @@ export default function Index() {
                         <View
                           className="btn-item"
                           style="background-color:#C1E9EE"
-                          onClick={handleEvalClick}
+                          onClick={() => handleEvalClick(item.id)}
                         >
                           评价
                         </View>

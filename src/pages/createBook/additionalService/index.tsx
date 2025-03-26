@@ -59,7 +59,6 @@ export default function AdditionalService() {
           title: '预约单创建成功',
           icon: 'none',
           success() {
-            removeStorageSync('bookInfo');
             setTimeout(() => {
               navigateTo({
                 url: '../order/index?id=' + data.id,

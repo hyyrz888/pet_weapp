@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { View, Image } from '@tarojs/components';
-import { useLoad, navigateTo } from '@tarojs/taro';
+import { useLoad, redirectTo } from '@tarojs/taro';
 import payResult from '../../../subpackages/assets/images/payResult.png';
 import './index.scss';
 
@@ -15,7 +15,7 @@ export default function OtherBookService() {
 
   const goView = () => {
     // 跳转我的预约
-    navigateTo({
+    redirectTo({
       url:
         '/pages/mine/appointList/detail/index?id=' + id + '&statuName=已付款',
     });

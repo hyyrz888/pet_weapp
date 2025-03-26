@@ -6,6 +6,7 @@ const APIS = {
   DETAIL: '/mp/book', // 获取图书列表
   PREPAY: '/mp/wx/prepay',
   PAY: '/mp/wx/pay',
+  EVALUATE: '/mp/evaluate',
 };
 
 const add = (data) => {
@@ -43,4 +44,19 @@ const pay = (data) => {
   });
 };
 
-export { add, list, detail, prepay, pay };
+//评价
+const evaluate = (data) => {
+  return request(APIS.EVALUATE, {
+    method: 'post',
+    data,
+  });
+};
+
+//获取评价列表
+const getEvaluate = (id: string) => {
+  return request(APIS.EVALUATE + `/${id}`, {
+    method: 'get',
+  });
+};
+
+export { add, list, detail, prepay, pay, evaluate, getEvaluate };

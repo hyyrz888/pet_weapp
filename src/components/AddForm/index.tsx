@@ -109,9 +109,11 @@ export default forwardRef((props, ref) => {
       });
     } else {
       _formData[formItem.prop] = e;
-      setFormData({
-        ..._formData,
-        [formItem.prop]: e,
+      setFormData((d) => {
+        return {
+          ...d,
+          [formItem.prop]: e,
+        };
       });
     }
     console.log(_formData);
